@@ -1,0 +1,6668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cleanova — Report. Clean. Recycle. Reward.</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+:root{
+    --green:#16a34a;
+    --green2:#059669;
+    --teal:#0d9488;
+    --dark:#071b12;
+    --dark2:#0d2a1d;
+    --text:#10251b;
+    --muted:#64748b;
+    --bg:#f5fbf7;
+    --white:#fff;
+    --border:#dfeae3;
+    --danger:#ef4444;
+    --warning:#f59e0b;
+    --shadow:0 20px 60px rgba(7,27,18,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.5;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+
+.navbar{
+    position:sticky;top:0;z-index:1000;height:72px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 6%;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:blur(18px);
+    border-bottom:1px solid rgba(223,234,227,.9);
+}
+.logo{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:900}
+.logo-icon{
+    width:40px;height:40px;border-radius:13px;
+    display:grid;place-items:center;background:#dcfce7;
+}
+.mobile-menu-btn{
+  display:none;
+  border:0;
+  background:rgba(255,255,255,.10);
+  color:#fff;
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  font-size:24px;
+  align-items:center;
+  justify-content:center;
+}
+
+.mobile-nav-menu{
+  display:none;
+}
+.nav-links{display:flex;gap:25px;align-items:center}
+.nav-links button{
+    border:0;
+    background:none;
+    color:#d9f7ff;
+    font-weight:800;
+    font-size:13px;
+    text-shadow:0 1px 8px rgba(0,0,0,.25);
+    transition:.25s ease;
+}
+
+.nav-links button:hover{
+    color:#35d07f;
+}
+.profile{
+    width:42px;
+    height:42px;
+    min-width:42px;
+    min-height:42px;
+    padding:0;
+    margin:0;
+    border:0;
+    border-radius:50%;
+    background:linear-gradient(135deg,#166534,#059669);
+    color:#fff;
+    font-weight:900;
+    font-size:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    line-height:42px;
+    box-sizing:border-box;
+    cursor:pointer;
+}
+.profile.hidden{display:none}
+
+.hero{
+    position:relative;overflow:hidden;
+    min-height:650px;padding:80px 6%;
+    display:grid;grid-template-columns:1.05fr .95fr;gap:55px;align-items:center;
+    background:
+      radial-gradient(circle at 85% 18%,rgba(34,197,94,.22),transparent 28%),
+      radial-gradient(circle at 10% 85%,rgba(14,165,233,.12),transparent 27%),
+      linear-gradient(135deg,#f8fffb,#eefbf3 55%,#f0fdf4);
+}
+.hero:before{
+    content:"";position:absolute;width:330px;height:330px;border-radius:50%;
+    right:-120px;bottom:-130px;background:rgba(13,148,136,.08);
+}
+.badge{
+    display:inline-flex;gap:8px;align-items:center;padding:9px 14px;
+    border-radius:999px;background:#dcfce7;color:#166534;font-size:12px;font-weight:800;
+    margin-bottom:22px;
+}
+.hero h1{
+    font-size:clamp(42px,5.4vw,70px);line-height:1.02;letter-spacing:-3px;
+    font-weight:900;max-width:760px;margin-bottom:22px;
+}
+.hero h1 span{
+    background:linear-gradient(90deg,#16a34a,#059669,#0d9488);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p{max-width:650px;color:#64748b;font-size:17px;line-height:1.75;margin-bottom:28px}
+.actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn{
+    border:0;border-radius:13px;padding:14px 20px;font-weight:800;font-size:14px;
+    transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-primary{color:#fff;background:linear-gradient(135deg,#16a34a,#059669);box-shadow:0 12px 28px rgba(22,163,74,.24)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(22,163,74,.32)}
+.btn-secondary{background:#fff;color:#166534;border:1px solid #bde8cb}
+.btn-danger{background:#fee2e2;color:#b91c1c}
+.btn-small{padding:9px 12px;font-size:12px;border-radius:10px}
+
+.hero-card{
+    background:rgba(255,255,255,.86);border:1px solid rgba(255,255,255,.9);
+    border-radius:28px;padding:18px;box-shadow:0 30px 80px rgba(15,23,42,.14);
+}
+.card-head{display:flex;justify-content:space-between;align-items:center;padding:8px 6px 16px}
+.card-head strong{font-size:15px}
+.card-head small{display:block;color:var(--muted);margin-top:3px}
+.status-pill{padding:7px 10px;border-radius:999px;background:#dcfce7;color:#15803d;font-size:11px;font-weight:800}
+#realWasteMap{
+    width:100%;
+    height:315px;
+    min-height:315px;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.section{padding:82px 6%}
+.section-head{text-align:center;max-width:720px;margin:0 auto 42px}
+.section-head h2{font-size:36px;letter-spacing:-1.3px;margin-bottom:10px}
+.section-head p{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.stat{
+    background:#fff;border:1px solid var(--border);border-radius:20px;padding:24px;
+    box-shadow:0 10px 35px rgba(15,23,42,.04);
+}
+.stat-icon{font-size:25px;margin-bottom:12px}
+.stat h3{font-size:29px}
+.stat p{font-size:12px;color:var(--muted);margin-top:4px}
+
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.feature{
+    position:relative;overflow:hidden;background:#fff;border:1px solid var(--border);
+    border-radius:22px;padding:27px;transition:.25s;
+}
+.feature:after{
+    content:"";position:absolute;width:110px;height:110px;border-radius:50%;
+    right:-45px;top:-45px;background:#dcfce7;
+}
+.feature:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+.feature-icon{
+    width:52px;height:52px;border-radius:15px;background:#ecfdf5;
+    display:grid;place-items:center;font-size:24px;margin-bottom:18px;position:relative;z-index:1;
+}
+.feature h3{margin-bottom:8px}
+.feature p{color:var(--muted);font-size:13px;line-height:1.65}
+
+.workflow{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.step{text-align:center}
+.step-number{
+    width:50px;height:50px;margin:0 auto 14px;border-radius:50%;
+    display:grid;place-items:center;color:#fff;font-weight:900;
+    background:linear-gradient(135deg,#166534,#059669);
+    box-shadow:0 8px 20px rgba(22,101,52,.2);
+}
+.step h4{margin-bottom:5px}.step p{font-size:12px;color:var(--muted)}
+
+.map-card{
+    background:#fff;border:1px solid var(--border);border-radius:26px;padding:20px;
+    box-shadow:var(--shadow)
+}
+.map-toolbar{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:16px}
+.map-toolbar h3{font-size:20px}.map-toolbar p{font-size:12px;color:var(--muted);margin-top:3px}
+#communityMap{height:430px;border-radius:18px;overflow:hidden}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:13px}
+.legend span{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+.dashboard{
+    background:linear-gradient(135deg,#071b12,#0d2a1d 55%,#123b28);
+    color:#fff;border-radius:30px;padding:34px;box-shadow:0 25px 70px rgba(7,27,18,.18)
+}
+.dashboard-head{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:24px}
+.dashboard-head p{color:#9fb4a7;font-size:13px}
+.dashboard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.dash-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);padding:20px;border-radius:17px}
+.dash-card small{color:#a9c0b2}.dash-card h3{font-size:27px;margin-top:7px}
+
+.reports{display:grid;gap:13px;max-width:900px;margin:auto}
+.report-card{
+    background:#fff;border:1px solid var(--border);border-radius:18px;padding:18px;
+    display:flex;justify-content:space-between;align-items:center;gap:18px
+}
+.report-main h3{font-size:15px;margin-bottom:5px}
+.report-main p{font-size:12px;color:var(--muted);margin:3px 0}
+.report-status{font-size:11px;font-weight:900;padding:7px 10px;border-radius:999px;background:#fff7ed;color:#c2410c;white-space:nowrap}
+.empty{text-align:center;color:var(--muted);padding:30px}
+
+.leaderboard{
+    max-width:760px;margin:auto;background:#fff;border:1px solid var(--border);
+    border-radius:24px;overflow:hidden;box-shadow:var(--shadow)
+}
+.person{display:flex;justify-content:space-between;align-items:center;padding:17px 20px;border-bottom:1px solid var(--border)}
+.person:last-child{border-bottom:0}
+.person-left{display:flex;align-items:center;gap:12px}
+.rank{width:28px;font-weight:900;color:#64748b;text-align:center}
+.avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#dcfce7;color:#166534;font-weight:900}
+.points{color:#166534;font-weight:900}
+
+footer{background:#071b12;color:#fff;padding:45px 6%}
+.footer-content{display:flex;justify-content:space-between;gap:30px}
+footer p{color:#94a3b8;font-size:13px;margin-top:7px}
+.copyright{margin-top:30px;padding-top:18px;border-top:1px solid #294638;color:#94a3b8;font-size:12px}
+
+.modal{
+    display:none;position:fixed;inset:0;z-index:3000;padding:18px;
+    background:rgba(2,12,7,.65);backdrop-filter:blur(8px);
+    align-items:center;justify-content:center
+}
+.modal.active{display:flex}
+.modal-box{
+    width:100%;max-width:590px;max-height:92vh;overflow:auto;
+    background:#fff;border-radius:25px;padding:29px;position:relative;
+    box-shadow:0 30px 100px rgba(0,0,0,.25)
+}
+.close{
+    position:absolute;right:17px;top:16px;width:36px;height:36px;border:0;border-radius:50%;
+    background:#f1f5f9;color:#475569;font-size:20px
+}
+.modal-box h2{font-size:23px;margin-bottom:6px}
+.modal-sub{color:var(--muted);font-size:13px;margin-bottom:23px}
+.form-group{margin-bottom:15px}
+.form-group label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}
+input,select,textarea{
+    width:100%;border:1px solid #dbe5df;border-radius:11px;padding:12px 13px;
+    outline:0;background:#fff;color:#10251b
+}
+input:focus,select:focus,textarea:focus{border-color:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.10)}
+textarea{min-height:90px;resize:vertical}
+.file-note{font-size:11px;color:var(--muted);margin-top:5px}
+.preview{display:none;width:100%;max-height:190px;object-fit:cover;border-radius:12px;margin-top:10px}
+.location-box{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:13px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px
+}
+.location-box small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.auth-switch{text-align:center;font-size:12px;color:var(--muted);margin-top:16px}
+.auth-switch button{border:0;background:none;color:#16a34a;font-weight:900}
+.auth-error{display:none;background:#fee2e2;color:#b91c1c;padding:10px;border-radius:10px;font-size:12px;margin-bottom:13px}
+.success-box{text-align:center;padding:25px 10px}
+.success-icon{font-size:55px;margin-bottom:10px}
+.report-id{background:#f0fdf4;color:#166534;border-radius:12px;padding:13px;font-weight:900;margin:18px 0}
+.profile-menu{
+    position:fixed;right:6%;top:64px;width:270px;background:#fff;border:1px solid var(--border);
+    border-radius:18px;padding:15px;box-shadow:var(--shadow);z-index:1500;display:none
+}
+.profile-menu.active{display:block}
+.profile-user{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:10px}
+.profile-user .avatar{width:44px;height:44px}
+.profile-menu-item{padding:10px 4px;font-size:12px;color:#475569}
+.profile-menu .btn{width:100%;margin-top:8px}
+
+.toast-container{
+    position:fixed;right:22px;bottom:22px;z-index:5000;display:grid;gap:10px;width:min(360px,calc(100vw - 40px))
+}
+.toast{
+    background:#fff;border:1px solid var(--border);border-left:5px solid var(--green);
+    border-radius:13px;padding:13px 15px;box-shadow:0 18px 50px rgba(15,23,42,.18);
+    animation:toastIn .25s ease
+}
+.toast.error{border-left-color:var(--danger)}
+.toast.warning{border-left-color:var(--warning)}
+.toast strong{display:block;font-size:13px}.toast p{font-size:11px;color:var(--muted);margin-top:2px}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.locked{
+    text-align:center;padding:45px 20px
+}
+.locked .lock{font-size:45px}
+.locked h3{margin:10px 0 6px}.locked p{font-size:12px;color:var(--muted);margin-bottom:18px}
+
+@media(max-width:950px){
+    .hero{grid-template-columns:1fr}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .features{grid-template-columns:repeat(2,1fr)}
+    .workflow{grid-template-columns:repeat(3,1fr);row-gap:28px}
+    .dashboard-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+
+  .navbar{
+    padding:0 18px;
+  }
+
+  .nav-links{
+    display:none;
+  }
+
+  .mobile-menu-btn{
+    display:flex;
+  }
+
+  .mobile-nav-menu{
+    position:fixed;
+    top:72px;
+    left:12px;
+    right:12px;
+    z-index:2000;
+    background:#0b2537;
+    border:1px solid rgba(120,190,215,.20);
+    border-radius:18px;
+    padding:12px;
+    box-shadow:0 20px 50px rgba(0,0,0,.30);
+  }
+
+  .mobile-nav-menu.active{
+    display:grid;
+    gap:8px;
+  }
+
+  .mobile-nav-menu button{
+    width:100%;
+    border:0;
+    border-radius:12px;
+    padding:15px 16px;
+    background:rgba(255,255,255,.06);
+    color:#fff;
+    text-align:left;
+    font-weight:800;
+    font-size:14px;
+  }
+
+  .mobile-nav-menu button:hover{
+    background:rgba(22,163,74,.20);
+  }
+    .hero,.section{padding-left:18px;padding-right:18px}
+    .hero{padding-top:55px;padding-bottom:55px}.hero h1{letter-spacing:-2px}
+    .stats,.features,.dashboard-grid{grid-template-columns:1fr}
+    .workflow{grid-template-columns:1fr}
+    .dashboard{padding:23px}
+    .dashboard-head{align-items:flex-start;flex-direction:column}
+    .report-card{align-items:flex-start;flex-direction:column}
+    #communityMap{height:360px}
+    .footer-content{flex-direction:column}
+    .profile-menu{right:18px}
+}
+
+  /* REPORT FORM - MOBILE */
+
+  .modal{
+    padding:10px;
+    align-items:flex-start;
+    overflow-y:auto;
+  }
+
+  .modal-box{
+    width:100%;
+    max-width:100%;
+    max-height:calc(100vh - 20px);
+    margin:10px 0;
+    padding:22px 16px;
+    border-radius:20px;
+  }
+
+  .modal-box h2{
+    font-size:20px;
+    padding-right:35px;
+  }
+
+  .modal-sub{
+    font-size:12px;
+    line-height:1.5;
+    margin-bottom:20px;
+  }
+
+  .form-group{
+    margin-bottom:14px;
+  }
+
+  input,
+  select,
+  textarea{
+    font-size:16px;
+    min-height:48px;
+  }
+
+  textarea{
+    min-height:110px;
+  }
+
+  .location-box{
+    align-items:stretch;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .location-box > div{
+    min-width:0;
+  }
+
+  .location-box button{
+    width:100%;
+    min-height:46px;
+  }
+
+  .preview{
+    max-height:220px;
+  }
+
+  .modal-box .btn-primary{
+    min-height:48px;
+  }
+
+/* =========================================
+   COMPLETE CLEANUP CYCLE
+========================================= */
+
+.cleanup-cycle{
+    background:
+        radial-gradient(
+            circle at 10% 20%,
+            rgba(34,197,94,.08),
+            transparent 30%
+        ),
+        #f8fbf9;
+}
+
+.cleanup-cycle .section-head{
+    margin-bottom:35px;
+}
+
+.cleanup-cycle .section-head h2{
+    font-size:42px;
+    font-weight:850;
+    letter-spacing:-1.5px;
+}
+
+.cleanup-cycle .section-head h2::after{
+    content:"";
+    display:block;
+    width:55px;
+    height:4px;
+    background:#16a34a;
+    border-radius:10px;
+    margin:14px auto 0;
+}
+
+.cycle-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:18px;
+    max-width:1450px;
+    margin:auto;
+}
+
+.cycle-card{
+    background:rgba(255,255,255,.95);
+    border:1px solid #e2e8f0;
+    border-radius:20px;
+    padding:25px 18px 22px;
+    text-align:center;
+    min-height:260px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 8px 25px rgba(15,23,42,.06);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease;
+}
+
+.cycle-card:hover{
+    transform:translateY(-8px);
+
+    border-color:#22c55e;
+
+    box-shadow:
+        0 18px 40px rgba(22,163,74,.15);
+}
+
+.featured-card{
+    border:2px solid #22c55e;
+
+    box-shadow:
+        0 12px 35px rgba(34,197,94,.15);
+}
+
+.cycle-image{
+    width:110px;
+    height:110px;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:58px;
+
+    background:
+        radial-gradient(
+            circle,
+            #f0fdf4,
+            #dcfce7
+        );
+
+    margin-bottom:18px;
+
+    transition:.3s;
+}
+
+.cycle-card:hover .cycle-image{
+    transform:scale(1.08) rotate(3deg);
+}
+
+.cycle-card h3{
+    font-size:17px;
+    margin-bottom:10px;
+    color:#f1f3f5;
+}
+
+.cycle-card p{
+    color:#9fbec0;
+    font-size:13px;
+    line-height:1.55;
+    flex:1;
+}
+
+.cycle-card span{
+    color:#16a34a;
+    font-size:13px;
+    font-weight:800;
+    margin-top:15px;
+}
+
+
+/* =========================================
+   FEATURE POPUP
+========================================= */
+
+.feature-modal{
+    position:fixed;
+    inset:0;
+
+    background:rgba(2,12,8,.65);
+    backdrop-filter:blur(7px);
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    z-index:5000;
+
+    padding:20px;
+}
+
+.feature-modal.active{
+    display:flex;
+}
+
+.feature-modal-box{
+    width:100%;
+    max-width:720px;
+    max-height:90vh;
+
+    overflow:auto;
+
+    background:white;
+
+    border-radius:28px;
+
+    padding:30px;
+
+    position:relative;
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.25);
+
+    animation:
+        featurePopup .25s ease;
+}
+
+@keyframes featurePopup{
+
+    from{
+        opacity:0;
+        transform:translateY(25px) scale(.97);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+
+}
+
+.feature-close{
+    position:absolute;
+
+    right:20px;
+    top:18px;
+
+    width:38px;
+    height:38px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#f1f5f9;
+
+    font-size:24px;
+
+    cursor:pointer;
+
+    color:#334155;
+}
+
+.feature-close:hover{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.feature-modal-header{
+    display:flex;
+    align-items:center;
+    gap:18px;
+
+    margin-bottom:28px;
+
+    padding-right:35px;
+}
+
+.feature-modal-icon{
+    width:60px;
+    height:60px;
+
+    flex-shrink:0;
+
+    border-radius:18px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:32px;
+
+    background:#dcfce7;
+}
+
+.feature-modal-header h2{
+    font-size:25px;
+    margin-bottom:5px;
+}
+
+.feature-modal-header p{
+    color:#16a34a;
+    font-size:14px;
+    font-weight:700;
+}
+
+.feature-steps{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:12px;
+}
+
+.feature-step{
+    text-align:center;
+
+    border:1px solid #e2e8f0;
+
+    border-radius:16px;
+
+    padding:15px 10px;
+
+    background:#fbfefd;
+}
+
+.feature-step-number{
+    width:30px;
+    height:30px;
+
+    margin:0 auto 10px;
+
+    border-radius:50%;
+
+    background:#16a34a;
+
+    color:white;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-weight:800;
+    font-size:13px;
+}
+
+.feature-step-icon{
+    font-size:38px;
+    margin-bottom:10px;
+}
+
+.feature-step h4{
+    font-size:13px;
+    margin-bottom:7px;
+}
+
+.feature-step p{
+    font-size:11px;
+    color:#64748b;
+    line-height:1.5;
+}
+
+.feature-done{
+    display:block;
+
+    margin:25px auto 0;
+
+    min-width:180px;
+
+    border:none;
+    border-radius:12px;
+
+    padding:12px 25px;
+
+    background:#16a34a;
+    color:white;
+
+    font-size:15px;
+    font-weight:800;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 8px 20px rgba(22,163,74,.25);
+}
+
+.feature-done:hover{
+    background:#15803d;
+    transform:translateY(-2px);
+}
+
+
+/* MOBILE */
+
+@media(max-width:1100px){
+
+    .cycle-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+}
+
+@media(max-width:650px){
+
+    .cleanup-cycle .section-head h2{
+        font-size:30px;
+    }
+
+    .cycle-grid{
+        grid-template-columns:1fr;
+    }
+
+    .cycle-card{
+        min-height:230px;
+    }
+
+    .feature-modal-box{
+        padding:22px;
+    }
+
+    .feature-modal-header h2{
+        font-size:20px;
+    }
+
+    .feature-steps{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+/* =========================================================
+   Cleanova — PREMIUM ECO-TECH UI
+   COMPLETE CSS UPGRADE — CORRECTED VERSION
+   ========================================================= */
+
+:root{
+    --bg:#071522;
+    --bg2:#0a1f30;
+    --surface:#112b3d;
+    --surface2:#162f42;
+    --surface3:#1a3549;
+
+    --green:#35d07f;
+    --teal:#32c7b5;
+    --cyan:#58d6e8;
+    --blue:#4da3ff;
+    --purple:#9b8cff;
+    --gold:#f4c95d;
+
+    --white:#f7fbfd;
+    --text:#dce9ef;
+    --muted:#91a8b6;
+
+    --border:rgba(150,205,220,.16);
+    --shadow:rgba(0,0,0,.30);
+}
+
+
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
+*{
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    color:var(--text);
+
+    background:
+        radial-gradient(
+            circle at 8% 8%,
+            rgba(50,199,181,.15),
+            transparent 27%
+        ),
+        radial-gradient(
+            circle at 92% 12%,
+            rgba(77,163,255,.14),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(155,140,255,.08),
+            transparent 32%
+        ),
+        linear-gradient(
+            135deg,
+            #06131f 0%,
+            #081d2d 48%,
+            #092638 100%
+        );
+}
+
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.navbar{
+    background:rgba(5,18,29,.82);
+
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+
+    border-bottom:1px solid rgba(88,214,232,.14);
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.22);
+}
+
+.logo{
+    letter-spacing:-.5px;
+}
+
+.logo-icon{
+    background:
+        linear-gradient(
+            135deg,
+            var(--green),
+            var(--teal)
+        );
+
+    color:#052016;
+
+    box-shadow:
+        0 8px 24px rgba(53,208,127,.25);
+}
+
+.logo span{
+    background:
+        linear-gradient(
+            90deg,
+            var(--green),
+            var(--cyan),
+            var(--blue)
+        );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    -webkit-text-fill-color:transparent;
+}
+
+.nav-links a{
+    color:#bdced7;
+
+    position:relative;
+
+    transition:.25s;
+}
+
+.nav-links a:hover{
+    color:var(--cyan);
+}
+
+.nav-links a::after{
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    bottom:-8px;
+
+    width:0;
+    height:2px;
+
+    border-radius:10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--green),
+            var(--cyan)
+        );
+
+    transition:.25s;
+}
+
+.nav-links a:hover::after{
+    width:100%;
+}
+
+.profile{
+    background:
+        linear-gradient(
+            135deg,
+            var(--green),
+            var(--teal)
+        );
+
+    color:#052016;
+
+    box-shadow:
+        0 8px 25px rgba(53,208,127,.25);
+
+    transition:.25s;
+}
+
+.profile:hover{
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 14px 30px rgba(53,208,127,.35);
+}
+
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero{
+    position:relative;
+    overflow:hidden;
+
+    background:
+        radial-gradient(
+            circle at 85% 15%,
+            rgba(50,199,181,.20),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 12% 85%,
+            rgba(77,163,255,.14),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #061522,
+            #092337,
+            #0a293a
+        );
+}
+
+.hero::before{
+    content:"";
+
+    position:absolute;
+
+    width:420px;
+    height:420px;
+
+    top:-210px;
+    right:-100px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(53,208,127,.12),
+            transparent 70%
+        );
+
+    pointer-events:none;
+}
+
+.hero::after{
+    content:"";
+
+    position:absolute;
+
+    width:330px;
+    height:330px;
+
+    bottom:-170px;
+    left:-100px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(77,163,255,.10),
+            transparent 70%
+        );
+
+    pointer-events:none;
+}
+
+
+/* =========================================================
+   HERO BADGE
+   ========================================================= */
+
+.badge{
+    background:rgba(50,199,181,.10);
+
+    color:#6de1d3;
+
+    border:1px solid rgba(50,199,181,.25);
+
+    box-shadow:
+        0 8px 25px rgba(50,199,181,.08);
+}
+
+
+/* =========================================================
+   HERO TITLE
+   ========================================================= */
+
+.hero h1{
+    color:var(--white);
+
+    font-weight:850;
+
+    letter-spacing:-3px;
+
+    line-height:1.02;
+}
+
+.hero h1 span{
+    background:
+        linear-gradient(
+            90deg,
+            var(--green),
+            var(--cyan),
+            var(--blue)
+        );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    -webkit-text-fill-color:transparent;
+
+    background-size:200% auto;
+
+    animation:
+        CleanovaGradient 5s ease infinite;
+}
+
+@keyframes CleanovaGradient{
+
+    0%{
+        background-position:0% center;
+    }
+
+    50%{
+        background-position:100% center;
+    }
+
+    100%{
+        background-position:0% center;
+    }
+}
+
+.hero p{
+    color:#a9bdc8;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.btn{
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+.btn-primary{
+    background:
+        linear-gradient(
+            135deg,
+            var(--green),
+            var(--teal)
+        );
+
+    color:#052016;
+
+    border:none;
+
+    box-shadow:
+        0 10px 30px rgba(53,208,127,.25);
+}
+
+.btn-primary:hover{
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 16px 35px rgba(53,208,127,.38);
+}
+
+.btn-secondary{
+    background:
+        rgba(77,163,255,.10);
+
+    color:#e4f1f7;
+
+    border:1px solid rgba(77,163,255,.30);
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.16);
+}
+
+.btn-secondary:hover{
+    background:
+        rgba(77,163,255,.18);
+
+    border-color:var(--blue);
+
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 14px 30px rgba(77,163,255,.20);
+}
+
+
+/* =========================================================
+   HERO CARD
+   ========================================================= */
+
+.hero-card{
+    background:
+        linear-gradient(
+            145deg,
+            rgba(22,57,78,.96),
+            rgba(12,38,57,.96)
+        );
+
+    border:1px solid rgba(88,214,232,.20);
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.34);
+
+    transition:.35s;
+}
+
+.hero-card:hover{
+    transform:translateY(-6px);
+
+    border-color:
+        rgba(88,214,232,.38);
+
+    box-shadow:
+        0 38px 90px rgba(0,0,0,.42),
+        0 0 45px rgba(88,214,232,.08);
+}
+
+.status{
+    background:
+        rgba(53,208,127,.12);
+
+    color:#6de1a0;
+
+    border:1px solid rgba(53,208,127,.25);
+}
+
+
+/* =========================================================
+   STATISTICS
+   ========================================================= */
+
+.stat{
+    position:relative;
+    overflow:hidden;
+
+    background:
+        linear-gradient(
+            145deg,
+            #142f46,
+            #102536
+        );
+
+    border:1px solid rgba(77,163,255,.20);
+
+    color:#fff;
+
+    box-shadow:
+        0 14px 35px rgba(0,0,0,.25);
+
+    transition:.3s;
+}
+
+.stat::before{
+    content:"";
+
+    position:absolute;
+
+    width:120px;
+    height:120px;
+
+    top:-60px;
+    right:-50px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(77,163,255,.12),
+            transparent 70%
+        );
+}
+
+.stat:hover{
+    transform:translateY(-7px);
+
+    border-color:
+        rgba(77,163,255,.40);
+
+    box-shadow:
+        0 22px 45px rgba(0,0,0,.32);
+}
+
+.stat-icon{
+    width:48px;
+    height:48px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border-radius:15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(77,163,255,.18),
+            rgba(88,214,232,.15)
+        );
+
+    color:var(--cyan);
+}
+
+
+/* =========================================================
+   SECTION HEADINGS
+   ========================================================= */
+
+.section-head h2{
+    color:#ffffff;
+
+    letter-spacing:-1px;
+}
+
+.section-head p{
+    color:#91a8b6;
+}
+
+.section-head h2::after{
+    content:"";
+
+    display:block;
+
+    width:50px;
+    height:4px;
+
+    margin:14px auto 0;
+
+    border-radius:20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--green),
+            var(--cyan),
+            var(--blue)
+        );
+}
+
+
+/* =========================================================
+   CLEANUP CYCLE
+   ========================================================= */
+
+.cleanup-cycle{
+    background:
+        radial-gradient(
+            circle at 8% 20%,
+            rgba(53,208,127,.08),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 92% 80%,
+            rgba(155,140,255,.08),
+            transparent 30%
+        ),
+        #081c2b;
+}
+
+.cycle-card{
+    background:
+        linear-gradient(
+            145deg,
+            #123a40,
+            #102c35
+        );
+
+    border:1px solid rgba(50,199,181,.20);
+
+    color:#fff;
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.25);
+
+    transition:.3s;
+}
+
+.cycle-card:hover{
+    transform:translateY(-8px);
+
+    border-color:
+        rgba(50,199,181,.42);
+
+    box-shadow:
+        0 22px 45px rgba(0,0,0,.32);
+}
+
+.cycle-image{
+    background:
+        linear-gradient(
+            135deg,
+            rgba(53,208,127,.20),
+            rgba(50,199,181,.16),
+            rgba(77,163,255,.14)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(88,214,232,.10);
+}
+
+
+/* =========================================================
+   CORRECTION:
+   EVIDENCE-BASED REPORTING SHOULD NOT BE BROWN
+   ========================================================= */
+
+.featured-card{
+    background:
+        linear-gradient(
+            145deg,
+            #123a40,
+            #102c35
+        );
+
+    border:1px solid rgba(88,214,232,.24);
+
+    color:#fff;
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.25);
+}
+
+.featured-card:hover{
+    border-color:
+        rgba(88,214,232,.42);
+
+    box-shadow:
+        0 22px 45px rgba(0,0,0,.32);
+}
+
+
+/* =========================================================
+   FEATURE CARDS
+   ========================================================= */
+
+.feature{
+    background:
+        linear-gradient(
+            145deg,
+            #183448,
+            #132a3a
+        );
+
+    border:1px solid rgba(88,214,232,.16);
+
+    color:#fff;
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.22);
+
+    transition:.3s;
+}
+
+.feature:hover{
+    transform:translateY(-6px);
+
+    border-color:
+        rgba(88,214,232,.35);
+
+    box-shadow:
+        0 20px 42px rgba(0,0,0,.30);
+}
+
+.feature-icon{
+    background:
+        linear-gradient(
+            135deg,
+            rgba(50,199,181,.18),
+            rgba(77,163,255,.16)
+        );
+
+    color:var(--cyan);
+}
+
+
+/* =========================================================
+   WORKFLOW
+   ========================================================= */
+
+.step-number{
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            var(--cyan)
+        );
+
+    color:#061522;
+
+    box-shadow:
+        0 8px 20px rgba(77,163,255,.25);
+}
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+.dashboard{
+    background:
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(50,199,181,.17),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 10% 90%,
+            rgba(77,163,255,.12),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #061522,
+            #092638,
+            #082d3b
+        );
+
+    box-shadow:
+        0 25px 60px rgba(0,0,0,.34);
+}
+
+.dash-card{
+    background:
+        rgba(255,255,255,.055);
+
+    border:1px solid rgba(255,255,255,.12);
+
+    color:#fff;
+
+    backdrop-filter:blur(14px);
+
+    box-shadow:
+        0 12px 35px rgba(0,0,0,.20);
+
+    transition:.3s;
+}
+
+.dash-card:hover{
+    transform:translateY(-5px);
+
+    border-color:
+        rgba(88,214,232,.35);
+
+    background:
+        rgba(50,199,181,.09);
+}
+
+
+/* =========================================================
+   COMMUNITY MAP
+   CORRECTED — DARK PREMIUM MAP CONTAINER
+   ========================================================= */
+
+/* ================================
+   PREMIUM COMMUNITY MAP CARD
+================================ */
+
+.map-section-card{
+    background:
+        linear-gradient(145deg,#ffffff 0%,#f7fffb 100%);
+    border:1px solid rgba(22,163,74,.12);
+    border-radius:28px;
+    padding:28px;
+    box-shadow:
+        0 20px 55px rgba(15,23,42,.08),
+        0 4px 14px rgba(22,163,74,.05);
+    position:relative;
+    overflow:hidden;
+}
+
+.map-section-card::before{
+    content:"";
+    position:absolute;
+    width:240px;
+    height:240px;
+    right:-100px;
+    top:-120px;
+    background:rgba(34,197,94,.10);
+    border-radius:50%;
+    pointer-events:none;
+}
+
+.map-controls{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+    position:relative;
+    z-index:2;
+}
+
+.map-title{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.map-title::before{
+    content:"🗺️";
+    width:48px;
+    height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(
+        135deg,
+        #dcfce7,
+        #ccfbf1
+    );
+    border-radius:15px;
+    font-size:22px;
+    box-shadow:0 8px 20px rgba(22,163,74,.10);
+}
+
+.map-title h3{
+    font-size:22px;
+    font-weight:800;
+    color:#10251b;
+    margin-bottom:5px;
+}
+
+.map-title p{
+    color:#64748b;
+    font-size:13px;
+    margin:0;
+}
+
+/* MAP ITSELF */
+
+#communityWasteMap{
+    width:100%;
+    height:420px;
+    min-height:420px;
+    border-radius:22px;
+    overflow:hidden;
+    border:1px solid #dcefe3;
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.7),
+        0 12px 35px rgba(15,23,42,.10);
+    cursor:grab;
+    touch-action:none;
+}
+
+#communityWasteMap:active{
+    cursor:grabbing;
+}
+
+/* LOCATION BUTTON */
+
+.map-controls .btn-primary{
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #059669
+        );
+    border:none;
+    box-shadow:
+        0 10px 24px rgba(22,163,74,.22);
+    transition:.25s ease;
+}
+
+.map-controls .btn-primary:hover{
+    transform:translateY(-2px);
+    box-shadow:
+        0 14px 30px rgba(22,163,74,.32);
+}
+
+/* LEGEND */
+
+.map-legend{
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+    margin-top:17px;
+    padding:14px 16px;
+    background:#f8fffa;
+    border:1px solid #e2f3e7;
+    border-radius:14px;
+}
+
+.legend-item{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:12px;
+    font-weight:600;
+    color:#64748b;
+}
+
+.legend-dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    box-shadow:0 0 0 4px rgba(0,0,0,.03);
+}
+
+.legend-red{
+    background:#ef4444;
+}
+
+.legend-orange{
+    background:#f59e0b;
+}
+
+.legend-green{
+    background:#16a34a;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+    .map-section-card{
+        padding:18px;
+        border-radius:22px;
+    }
+
+    .map-controls{
+        align-items:flex-start;
+    }
+
+    .map-title{
+        align-items:flex-start;
+    }
+
+    .map-title h3{
+        font-size:19px;
+    }
+
+    #communityWasteMap{
+        height:350px;
+        min-height:350px;
+        border-radius:18px;
+    }
+
+    .map-controls .btn{
+        width:100%;
+    }
+
+}
+
+
+/* Decorative glow */
+
+.map-section-card::before{
+    content:"";
+
+    position:absolute;
+
+    width:360px;
+    height:360px;
+
+    top:-180px;
+    right:-120px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(88,214,232,.10),
+            transparent 70%
+        );
+
+    pointer-events:none;
+}
+
+
+/* Map heading */
+
+.map-section-card h2,
+.map-section-card h3{
+    color:#ffffff !important;
+
+    position:relative;
+
+    z-index:2;
+}
+
+
+/* Map description */
+
+.map-section-card p{
+    color:#9db4c1 !important;
+
+    position:relative;
+
+    z-index:2;
+}
+
+
+/* =========================================================
+   MAP HEADER / CONTROL AREA
+   ========================================================= */
+
+.map-section-card .map-header,
+.map-section-card .map-toolbar,
+.map-section-card .map-controls,
+.map-section-card .map-top{
+    background:
+        rgba(7,21,34,.72) !important;
+
+    border:1px solid rgba(88,214,232,.12);
+
+    color:#dce9ef;
+
+    border-radius:14px;
+}
+
+
+/* =========================================================
+   CORRECTION:
+   REMOVE WHITE INNER MAP CARD BACKGROUND
+   ========================================================= */
+
+.map-section-card > div{
+    background-color:transparent;
+}
+
+
+/* Common inner map wrappers */
+
+.map-section-card .map-container,
+.map-section-card .map-wrapper,
+.map-section-card .map-box,
+.map-section-card .map-content{
+    background:
+        #0a1927 !important;
+
+    border:
+        1px solid rgba(88,214,232,.18);
+
+    color:#dce9ef;
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.28);
+
+    border-radius:18px;
+}
+
+
+/* =========================================================
+   ACTUAL MAP
+   ========================================================= */
+
+#realWasteMap,
+#communityWasteMap{
+    width:100%;
+    height:430px;
+    min-height:430px;
+
+    background:#091725 !important;
+
+    border:1px solid rgba(88,214,232,.24) !important;
+
+    border-radius:18px !important;
+
+    box-shadow:
+        0 18px 40px rgba(0,0,0,.38);
+
+    overflow:hidden;
+
+    cursor:grab;
+    touch-action:none;
+}
+
+/* TOP HERO MAP */
+#realWasteMap{
+    height:290px;
+    min-height:290px;
+}
+
+/* MAIN COMMUNITY MAP */
+#communityWasteMap{
+    height:430px;
+    min-height:430px;
+}
+
+
+/* Keep Leaflet itself clean */
+
+#realWasteMap .leaflet-container,
+#communityWasteMap .leaflet-container{
+    background:#091725;
+}
+
+
+/* =========================================================
+   MAP TEXT ABOVE MAP
+   ========================================================= */
+
+.map-section-card small,
+.map-section-card .map-info,
+.map-section-card .map-note{
+    color:#8fa9b7 !important;
+
+    background:transparent !important;
+}
+
+
+/* =========================================================
+   MAP BUTTONS
+   ========================================================= */
+
+.map-section-card button{
+    background:
+        linear-gradient(
+            135deg,
+            #17384a,
+            #1d4658
+        ) !important;
+
+    color:#eaf5f8 !important;
+
+    border:
+        1px solid rgba(88,214,232,.25) !important;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.20);
+
+    transition:.25s;
+}
+
+.map-section-card button:hover{
+    background:
+        linear-gradient(
+            135deg,
+            #20536a,
+            #25677e
+        ) !important;
+
+    border-color:
+        var(--cyan) !important;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgba(88,214,232,.15);
+}
+
+
+/* =========================================================
+   MAP LEGEND
+   ========================================================= */
+
+.map-section-card .legend,
+.map-section-card .map-legend{
+    background:
+        rgba(7,21,34,.78) !important;
+
+    color:#a9bdc8;
+
+    border:
+        1px solid rgba(88,214,232,.12);
+
+    border-radius:12px;
+}
+
+
+/* =========================================================
+   REPORT CARDS
+   ========================================================= */
+
+.report-card{
+    background:
+        linear-gradient(
+            145deg,
+            #182632,
+            #111c25
+        );
+
+    border:1px solid rgba(255,255,255,.10);
+
+    color:#f4f8fa;
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.28);
+
+    transition:.3s;
+}
+
+.report-card:hover{
+    transform:translateY(-5px);
+
+    border-color:
+        rgba(53,208,127,.38);
+
+    box-shadow:
+        0 20px 42px rgba(0,0,0,.34);
+}
+
+.report-status{
+    background:
+        rgba(244,201,93,.12);
+
+    color:#f4d477;
+
+    border:1px solid rgba(244,201,93,.25);
+}
+
+
+/* =========================================================
+   LEADERBOARD
+   ========================================================= */
+
+.leaderboard{
+    background:
+        linear-gradient(
+            145deg,
+            #1b2038,
+            #12182a
+        );
+
+    border:1px solid rgba(155,140,255,.22);
+
+    color:#fff;
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.32);
+}
+
+.person{
+    transition:.25s;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.06);
+}
+
+.person:hover{
+    background:
+        rgba(155,140,255,.08);
+}
+
+.avatar{
+    background:
+        linear-gradient(
+            135deg,
+            var(--purple),
+            var(--blue)
+        );
+
+    color:#ffffff;
+
+    font-weight:900;
+
+    box-shadow:
+        0 6px 18px rgba(155,140,255,.20);
+}
+
+/* Cleanova Live Leaderboard Rows */
+.leaderboard-row{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    padding:18px 22px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    transition:.25s ease;
+}
+
+.leaderboard-row:last-child{
+    border-bottom:none;
+}
+
+.leaderboard-row:hover{
+    background:rgba(255,255,255,.05);
+}
+
+.leaderboard-rank{
+    width:38px;
+    height:38px;
+    min-width:38px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,#f5c542,#f59e0b);
+    color:#111827;
+    font-weight:900;
+    font-size:15px;
+}
+
+.leaderboard-user{
+    flex:1;
+    display:flex;
+    align-items:center;
+    gap:13px;
+    min-width:0;
+}
+
+.leaderboard-avatar{
+    width:44px;
+    height:44px;
+    min-width:44px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    background:linear-gradient(135deg,#8b5cf6,#38bdf8);
+    color:#ffffff;
+    font-size:16px;
+    font-weight:900;
+    box-shadow:0 6px 18px rgba(56,189,248,.20);
+}
+
+.leaderboard-user strong{
+    display:block;
+    color:#ffffff;
+    font-size:15px;
+    font-weight:800;
+    margin-bottom:4px;
+}
+
+.leaderboard-user small{
+    display:block;
+    color:#9fb3c8;
+    font-size:12px;
+}
+
+.leaderboard-points{
+    min-width:80px;
+    text-align:right;
+    color:#5eead4;
+    font-size:16px;
+    font-weight:900;
+}
+
+/* =========================================================
+   MODALS
+   ========================================================= */
+
+.modal{
+    background:
+        rgba(2,9,16,.80);
+
+    backdrop-filter:blur(9px);
+}
+
+.modal-box{
+    background:
+        linear-gradient(
+            145deg,
+            #173448,
+            #0d2435
+        );
+
+    color:#f5f8fa;
+
+    border:1px solid rgba(88,214,232,.20);
+
+    box-shadow:
+        0 30px 90px rgba(0,0,0,.48);
+}
+
+.close:hover{
+    background:
+        rgba(50,199,181,.14);
+
+    color:var(--cyan);
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+input,
+select,
+textarea{
+    background:#0b2537;
+
+    color:#f4f8fa;
+
+    border:1px solid rgba(120,190,215,.20);
+
+    transition:.2s;
+}
+
+input::placeholder,
+textarea::placeholder{
+    color:#718996;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    outline:none;
+
+    border-color:var(--cyan);
+
+    box-shadow:
+        0 0 0 4px rgba(88,214,232,.10);
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+footer{
+    background:
+        radial-gradient(
+            circle at 80% 20%,
+            rgba(50,199,181,.13),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #04121d,
+            #082536,
+            #072d38
+        );
+
+    color:#9eb4c0;
+}
+
+
+/* =========================================================
+   GENERAL TEXT HIERARCHY
+   ========================================================= */
+
+h1,
+h2,
+h3{
+    color:#ffffff;
+}
+
+h4,
+h5,
+h6{
+    color:#e4edf2;
+}
+
+p{
+    color:#9db3bf;
+}
+
+
+/* =========================================================
+   SPECIAL ACCENTS
+   ========================================================= */
+
+.points,
+.reward,
+.success{
+    color:#62e49b;
+}
+
+.info{
+    color:#61b5ff;
+}
+
+.gold,
+.rank,
+.score{
+    color:#f4d477;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:900px){
+
+    .hero h1{
+        font-size:46px;
+    }
+
+}
+
+@media(max-width:550px){
+
+    .hero h1{
+        font-size:38px;
+
+        letter-spacing:-1.5px;
+    }
+
+    .map-section-card{
+        border-radius:18px;
+    }
+
+    .map-section-card .map-container,
+    .map-section-card .map-wrapper,
+    .map-section-card .map-box,
+    .map-section-card .map-content{
+        border-radius:14px;
+    }
+}
+
+/* =========================================================
+   PREMIUM COMMUNITY WASTE MAP
+   ========================================================= */
+
+.community-map-section{
+    position:relative;
+    background:
+        radial-gradient(
+            circle at 10% 20%,
+            rgba(20,184,166,.10),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 90% 80%,
+            rgba(34,197,94,.10),
+            transparent 30%
+        );
+}
+
+
+/* SMALL BADGE */
+
+.section-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    padding:7px 13px;
+    border-radius:30px;
+
+    background:rgba(22,163,74,.10);
+    color:#15803d;
+
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.8px;
+
+    margin-bottom:12px;
+}
+
+
+/* MAP MAIN CARD */
+
+.community-map-card{
+
+    width:100%;
+    background:rgba(255,255,255,.96);
+
+    border:1px solid rgba(255,255,255,.8);
+
+    border-radius:28px;
+
+    padding:22px;
+
+    box-shadow:
+        0 25px 60px rgba(15,23,42,.12),
+        0 5px 15px rgba(15,23,42,.05);
+
+    position:relative;
+
+    overflow:hidden;
+}
+
+
+/* TOP HEADER */
+
+.community-map-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+    margin-bottom:18px;
+
+    padding:4px 4px 16px;
+
+    border-bottom:1px solid #edf2f7;
+}
+
+
+/* TITLE AREA */
+
+.community-map-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+}
+
+
+/* ICON */
+
+.map-icon-box{
+
+    width:48px;
+    height:48px;
+
+    min-width:48px;
+
+    border-radius:15px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:23px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #dcfce7,
+            #ccfbf1
+        );
+
+    box-shadow:
+        0 8px 20px rgba(16,185,129,.12);
+}
+
+
+/* TITLE */
+
+.community-map-title h3{
+
+    font-size:21px;
+
+    font-weight:800;
+
+    color:#10251b;
+
+    margin:0 0 5px;
+
+}
+
+
+/* DESCRIPTION */
+
+.community-map-title p{
+
+    margin:0;
+
+    color:#64748b;
+
+    font-size:13px;
+
+    line-height:1.5;
+
+}
+
+
+/* LOCATION BUTTON */
+
+.map-location-btn{
+
+    border:none;
+
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #0d9488
+        );
+
+    color:white;
+
+    padding:12px 18px;
+
+    border-radius:12px;
+
+    font-size:13px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 8px 20px rgba(22,163,74,.22);
+
+    transition:.2s;
+
+    white-space:nowrap;
+}
+
+
+.map-location-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgba(22,163,74,.30);
+
+}
+
+
+/* MAP WRAPPER */
+
+.community-map-wrapper{
+
+    position:relative;
+
+    width:100%;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    background:#eaf2ed;
+
+}
+
+
+/* ACTUAL MAP */
+
+#communityWasteMap{
+
+    width:100%;
+
+    height:430px;
+
+    min-height:430px;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    cursor:grab;
+
+    touch-action:none;
+
+}
+
+
+#communityWasteMap:active{
+
+    cursor:grabbing;
+
+}
+
+
+/* MAP FOOTER */
+
+.community-map-footer{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+    padding:15px 5px 2px;
+
+}
+
+
+/* STATUS */
+
+.map-status{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    font-size:12px;
+
+    color:#64748b;
+
+    font-weight:600;
+
+}
+
+
+/* DOT */
+
+.status-dot{
+
+    width:9px;
+
+    height:9px;
+
+    border-radius:50%;
+
+    display:inline-block;
+
+}
+
+
+.status-dot.red{
+    background:#ef4444;
+}
+
+
+.status-dot.orange{
+    background:#f59e0b;
+}
+
+
+.status-dot.green{
+    background:#16a34a;
+}
+
+
+/* TIP */
+
+.map-tip{
+
+    margin-left:auto;
+
+    color:#64748b;
+
+    font-size:12px;
+
+    font-weight:600;
+
+}
+
+.admin-badge{
+    display:inline-block;
+    margin-top:6px;
+    padding:4px 10px;
+    border-radius:20px;
+    background:#dcfce7;
+    color:#15803d;
+    font-size:11px;
+    font-weight:800;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+    .community-map-card{
+
+        padding:15px;
+
+        border-radius:22px;
+
+    }
+
+
+    .community-map-header{
+
+        align-items:flex-start;
+
+        flex-direction:column;
+
+    }
+
+
+    .map-location-btn{
+
+        width:100%;
+
+    }
+
+
+    #communityWasteMap{
+
+        height:350px;
+
+        min-height:350px;
+
+    }
+
+
+    .community-map-footer{
+
+        gap:12px;
+
+    }
+
+
+    .map-tip{
+
+        width:100%;
+
+        margin-left:0;
+
+        padding-top:5px;
+
+    }
+
+}
+
+#communityWasteMap{
+    width:100%;
+    height:430px;
+    min-height:430px;
+    border-radius:20px;
+    overflow:hidden;
+    cursor:grab;
+    touch-action:none;
+}
+
+#profileButton{
+    width:42px;
+    height:42px;
+    min-width:42px;
+    min-height:42px;
+    padding:0;
+    margin:0;
+    border:0;
+    border-radius:50%;
+
+    display:grid;
+    place-items:center;
+
+    text-align:center;
+    line-height:1;
+
+    color:#fff;
+    font-weight:900;
+    font-size:15px;
+
+    cursor:pointer;
+}
+
+/* ============================================================
+   ADMIN DASHBOARD
+============================================================ */
+
+.admin-dashboard{
+    min-height:100vh;
+    padding:90px 6% 80px;
+    background:
+        radial-gradient(circle at 10% 10%, rgba(45,212,191,.12), transparent 30%),
+        radial-gradient(circle at 90% 20%, rgba(34,197,94,.10), transparent 30%),
+        #071b2b;
+}
+
+.admin-container{
+    max-width:1400px;
+    margin:0 auto;
+}
+
+.admin-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    margin-bottom:35px;
+    flex-wrap:wrap;
+}
+
+.admin-title{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.admin-shield{
+    width:55px;
+    height:55px;
+    border-radius:16px;
+    display:grid;
+    place-items:center;
+    background:rgba(34,197,94,.15);
+    border:1px solid rgba(34,197,94,.3);
+    font-size:25px;
+}
+
+.admin-title h2{
+    margin:0;
+    color:#fff;
+    font-size:34px;
+}
+
+.admin-title p{
+    margin:5px 0 0;
+    color:#94a3b8;
+}
+
+.admin-badge-large{
+    padding:9px 15px;
+    border-radius:30px;
+    background:#dcfce7;
+    color:#15803d;
+    font-size:12px;
+    font-weight:800;
+}
+
+/* ADMIN STATISTICS */
+
+.admin-stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.admin-stat-card{
+    padding:25px;
+    border-radius:22px;
+    background:rgba(15,42,60,.85);
+    border:1px solid rgba(148,163,184,.15);
+    box-shadow:0 15px 40px rgba(0,0,0,.18);
+    transition:.25s ease;
+}
+
+.admin-stat-card:hover{
+    transform:translateY(-4px);
+    border-color:rgba(45,212,191,.4);
+}
+
+.admin-stat-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.admin-stat-icon{
+    width:45px;
+    height:45px;
+    border-radius:14px;
+    display:grid;
+    place-items:center;
+    background:rgba(45,212,191,.12);
+    font-size:21px;
+}
+
+.admin-stat-number{
+    margin-top:18px;
+    font-size:32px;
+    font-weight:900;
+    color:#fff;
+}
+
+.admin-stat-label{
+    margin-top:5px;
+    color:#94a3b8;
+    font-size:14px;
+}
+
+/* REPORT PANEL */
+
+.admin-panel{
+    background:rgba(10,31,46,.92);
+    border:1px solid rgba(148,163,184,.15);
+    border-radius:25px;
+    padding:28px;
+    box-shadow:0 20px 50px rgba(0,0,0,.2);
+}
+
+.admin-panel-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-bottom:25px;
+}
+
+.admin-panel-header h3{
+    margin:0;
+    color:#fff;
+    font-size:22px;
+}
+
+.admin-panel-header p{
+    margin:6px 0 0;
+    color:#64748b;
+    font-size:13px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+    .admin-stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:600px){
+
+    .admin-dashboard{
+        padding:70px 20px;
+    }
+
+    .admin-stats{
+        grid-template-columns:1fr;
+    }
+
+    .admin-title h2{
+        font-size:27px;
+    }
+
+}
+
+/* ============================================================
+   ADMIN REPORT CARDS
+============================================================ */
+
+.admin-report-card{
+    margin-top:18px;
+    padding:24px;
+    border-radius:20px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(20,48,65,.95),
+            rgba(10,29,43,.95)
+        );
+    border:1px solid rgba(148,163,184,.14);
+    box-shadow:0 12px 35px rgba(0,0,0,.18);
+    transition:.25s ease;
+}
+
+.admin-report-card:hover{
+    transform:translateY(-3px);
+    border-color:rgba(45,212,191,.35);
+}
+
+.admin-report-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.admin-report-code{
+    color:#fff;
+    font-size:20px;
+    font-weight:900;
+}
+
+.admin-report-user{
+    margin-top:5px;
+    color:#94a3b8;
+    font-size:12px;
+}
+
+.admin-report-user span{
+    margin:0 5px;
+    color:#475569;
+}
+
+.admin-status{
+    padding:7px 12px;
+    border-radius:30px;
+    font-size:11px;
+    font-weight:800;
+}
+
+.admin-status.pending{
+    background:rgba(239,68,68,.12);
+    color:#fca5a5;
+}
+
+.admin-status.in-progress{
+    background:rgba(245,158,11,.12);
+    color:#fcd34d;
+}
+
+.admin-status.verified{
+    background:rgba(34,197,94,.12);
+    color:#86efac;
+}
+
+.admin-status.rejected{
+    background:rgba(148,163,184,.12);
+    color:#cbd5e1;
+}
+
+.admin-report-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-top:22px;
+    padding:18px 0;
+    border-top:1px solid rgba(148,163,184,.10);
+    border-bottom:1px solid rgba(148,163,184,.10);
+}
+
+.admin-report-grid div{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.admin-report-grid small,
+.admin-description small{
+    color:#64748b;
+    font-size:11px;
+    font-weight:700;
+}
+
+.admin-report-grid strong{
+    color:#e2e8f0;
+    font-size:13px;
+}
+
+.admin-description{
+    padding:18px 0;
+}
+
+.admin-description p{
+    color:#cbd5e1;
+    line-height:1.6;
+    font-size:13px;
+    margin:7px 0 0;
+}
+
+.admin-photo{
+    margin-top:5px;
+}
+
+.admin-photo img{
+    width:180px;
+    height:120px;
+    object-fit:cover;
+    border-radius:14px;
+    cursor:pointer;
+    border:1px solid rgba(255,255,255,.12);
+}
+
+.admin-no-photo{
+    padding:15px;
+    border-radius:12px;
+    background:rgba(148,163,184,.06);
+    color:#64748b;
+    font-size:12px;
+}
+
+.admin-report-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-top:20px;
+    flex-wrap:wrap;
+}
+
+.admin-date{
+    color:#64748b;
+    font-size:11px;
+}
+
+.admin-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.admin-status-select{
+    width:auto;
+    min-width:145px;
+    padding:10px 12px;
+    border-radius:10px;
+    background:#0f2a3c;
+    color:#e2e8f0;
+    border:1px solid rgba(148,163,184,.2);
+}
+
+.admin-note{
+    margin-top:18px;
+    padding:14px 16px;
+    border-radius:12px;
+    background:rgba(45,212,191,.06);
+    border-left:3px solid #2dd4bf;
+}
+
+.admin-note strong{
+    color:#5eead4;
+    font-size:12px;
+}
+
+.admin-note p{
+    color:#94a3b8;
+    font-size:12px;
+    margin:6px 0 0;
+}
+
+@media(max-width:800px){
+
+    .admin-report-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:500px){
+
+    .admin-report-grid{
+        grid-template-columns:1fr;
+    }
+
+    .admin-actions{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .admin-status-select{
+        width:100%;
+    }
+
+}
+
+.logo-name{
+    display:inline-flex;
+    gap:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    letter-spacing:-.5px;
+    white-space:nowrap;
+}
+
+.logo-clean,
+.logo-ova{
+    margin:0 !important;
+    padding:0 !important;
+}
+
+.logo-clean{
+    color:#10251b;
+}
+
+.logo-ova{
+    background:linear-gradient(
+        90deg,
+        var(--green),
+        var(--cyan),
+        var(--blue)
+    );
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+<div class="logo">
+    <div class="logo-icon">♻️</div>
+    <span class="logo-name"><span class="logo-clean">Clean</span><span class="logo-ova">ova</span></span>
+</div>
+
+<button class="mobile-menu-btn" type="button" onclick="toggleMobileMenu()">
+  ☰
+</button>
+
+<div class="nav-links">
+        <button onclick="go('home')">Home</button>
+        <button onclick="requireLogin('report')">Report Waste</button>
+        <button onclick="go('map')">Waste Map</button>
+        <button onclick="go('features')">How It Works</button>
+        <button onclick="requireLogin('leaderboard')">Leaderboard</button>
+    </div>
+
+   <button class="profile hidden" id="profileButton" onclick="toggleProfileMenu()">?</button>
+<button
+    type="button"
+    class="btn btn-primary btn-small"
+    id="loginNavButton"
+    onclick="openLogin(); return false;">
+    Login
+</button>
+<button
+    class="btn btn-small"
+    id="adminNavButton"
+    onclick="go('adminDashboard')"
+    style="display:none;">
+    🛡️ Admin
+</button>
+</nav>
+
+<div class="mobile-nav-menu" id="mobileNavMenu">
+  <button onclick="closeMobileMenu(); go('home')">🏠 Home</button>
+  <button onclick="closeMobileMenu(); requireLogin('report')">📋 Report Waste</button>
+  <button onclick="closeMobileMenu(); go('map')">🗺️ Waste Map</button>
+  <button onclick="closeMobileMenu(); go('features')">⚙️ How It Works</button>
+  <button onclick="closeMobileMenu(); requireLogin('leaderboard')">🏆 Leaderboard</button>
+</div>
+
+<div class="profile-menu" id="profileMenu">
+    <div class="profile-user">
+        <div class="avatar" id="menuAvatar">M</div>
+        <div>
+            <strong id="menuName">User</strong>
+            <div style="font-size:11px;color:#64748b" id="menuEmail"></div>
+            <span id="menuRole" class="admin-badge" style="display:none;">
+    🛡️ ADMIN
+</span>
+        </div>
+    </div>
+    <div class="profile-menu-item">🏆 Clean Points: <strong id="menuPoints">0</strong></div>
+    <div class="profile-menu-item">📋 Reports Submitted: <strong id="menuReports">0</strong></div>
+    <button class="btn btn-danger btn-small" onclick="logout()">Logout</button>
+</div>
+
+<!-- ============================================================
+     ADMIN DASHBOARD
+============================================================ -->
+
+<section id="adminDashboard" class="admin-dashboard" style="display:none;">
+
+    <div class="admin-container">
+
+        <!-- HEADER -->
+
+        <div class="admin-header">
+
+            <div class="admin-title">
+
+                <div class="admin-shield">
+                    🛡️
+                </div>
+
+                <div>
+                    <h2>Admin Dashboard</h2>
+
+                    <p>
+                        Manage reports, monitor waste activity and coordinate cleanups.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="admin-badge-large">
+                🛡️ ADMIN ACCESS
+            </div>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+
+        <div class="admin-stats">
+
+            <div class="admin-stat-card">
+
+                <div class="admin-stat-top">
+
+                    <div>
+                        <div class="admin-stat-number" id="adminTotalReports">
+                            0
+                        </div>
+
+                        <div class="admin-stat-label">
+                            Total Reports
+                        </div>
+                    </div>
+
+                    <div class="admin-stat-icon">
+                        📋
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-stat-card">
+
+                <div class="admin-stat-top">
+
+                    <div>
+                        <div class="admin-stat-number" id="adminPendingReports">
+                            0
+                        </div>
+
+                        <div class="admin-stat-label">
+                            Pending
+                        </div>
+                    </div>
+
+                    <div class="admin-stat-icon">
+                        ⏳
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-stat-card">
+
+                <div class="admin-stat-top">
+
+                    <div>
+                        <div class="admin-stat-number" id="adminProgressReports">
+                            0
+                        </div>
+
+                        <div class="admin-stat-label">
+                            In Progress
+                        </div>
+                    </div>
+
+                    <div class="admin-stat-icon">
+                        🔄
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-stat-card">
+
+                <div class="admin-stat-top">
+
+                    <div>
+                        <div class="admin-stat-number" id="adminVerifiedReports">
+                            0
+                        </div>
+
+                        <div class="admin-stat-label">
+                            Verified
+                        </div>
+                    </div>
+
+                    <div class="admin-stat-icon">
+                        ✅
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- REPORT MANAGEMENT -->
+
+        <div class="admin-panel">
+
+            <div class="admin-panel-header">
+
+                <div>
+
+                    <h3>
+                        📋 Community Reports
+                    </h3>
+
+                    <p>
+                        Review and manage waste reports submitted by community members.
+                    </p>
+
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="loadAdminReports()">
+
+                    🔄 Refresh Reports
+
+                </button>
+
+            </div>
+
+
+            <div id="adminReportsContainer">
+
+                <div style="
+                    text-align:center;
+                    padding:50px;
+                    color:#64748b;
+                ">
+
+                    Loading reports...
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="admin-panel" style="margin-top:24px;">
+    <div class="admin-panel-header">
+        <div>
+            <h3>🧹 Cleanup Tracking</h3>
+            <p>View cleanup tasks created from community waste reports.</p>
+        </div>
+
+        <button class="btn btn-primary" onclick="loadAdminCleanups()">
+            🔄 Refresh Cleanups
+        </button>
+    </div>
+
+    <div id="adminCleanupsContainer">
+        <div style="text-align:center;padding:40px;color:#64748b;">
+            Loading cleanup tasks...
+        </div>
+    </div>
+</div>
+
+    </div>
+
+</section>
+
+<section class="hero" id="home">
+    <div>
+        <div class="badge">🌱 Community-powered cleanliness</div>
+        <h1>Turn waste reports into <span>real-world impact.</span></h1>
+        <p>
+            Report plastic waste with evidence and location, help cleanup teams
+            find it, track progress and reward the people who make communities cleaner.
+        </p>
+        <div class="actions">
+            <button class="btn btn-primary" onclick="requireLogin('report')">📍 Report Plastic Waste</button>
+            <button class="btn btn-secondary" onclick="go('map')">🗺️ Explore Waste Map</button>
+        </div>
+    </div>
+
+    <div class="hero-card">
+        <div class="card-head">
+            <div>
+                <strong>Live Waste Monitoring</strong>
+                <small>Community reports & cleanup locations</small>
+            </div>
+            <div class="status-pill">● SYSTEM ACTIVE</div>
+        </div>
+        <div id="realWasteMap"></div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-head">
+        <h2>Small actions. Measurable impact.</h2>
+        <p>Every verified action moves the community closer to a cleaner environment.</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat"><div class="stat-icon">📋</div><h3 id="totalReports">0</h3><p>Community Reports</p></div>
+        <div class="stat"><div class="stat-icon">🧹</div><h3 id="totalCleanups">0</h3><p>Cleanups Completed</p></div>
+        <div class="stat"><div class="stat-icon">♻️</div><h3 id="totalPlastic">0 kg</h3><p>Verified Reports</p></div>
+        <div class="stat"><div class="stat-icon">🏆</div><h3 id="totalUsers">0</h3><p>Community Members</p></div>
+    </div>
+</section>
+
+<!-- COMPLETE CLEANUP CYCLE -->
+
+<section class="section cleanup-cycle" id="features">
+
+    <div class="section-head">
+
+        <h2>One platform. Complete cleanup cycle.</h2>
+
+        <p>
+            Report waste, track progress, earn points and help build
+            a cleaner, greener community.
+        </p>
+
+    </div>
+
+    <div class="cycle-grid">
+
+        <!-- 1 -->
+        <div class="cycle-card featured-card"
+             onclick="openFeature('report')">
+
+            <div class="cycle-image">📸</div>
+
+            <h3>Evidence-based reporting</h3>
+
+            <p>
+                Submit real photo evidence with location and details.
+            </p>
+
+            <span>Click to explore →</span>
+
+        </div>
+
+
+        <!-- 2 -->
+        <div class="cycle-card"
+             onclick="openFeature('location')">
+
+            <div class="cycle-image">📍</div>
+
+            <h3>Location tracking</h3>
+
+            <p>
+                Capture exact GPS location for accurate reporting.
+            </p>
+
+            <span>Click to explore →</span>
+
+        </div>
+
+
+        <!-- 3 -->
+        <div class="cycle-card"
+             onclick="openFeature('cleanup')">
+
+            <div class="cycle-image">🗑️</div>
+
+            <h3>Report Tracking</h3>
+
+            <p>
+                From report to verification—track every cleanup step.
+            </p>
+
+            <span>Click to explore →</span>
+
+        </div>
+
+
+        <!-- 4 -->
+        <div class="cycle-card"
+             onclick="openFeature('recycling')">
+
+            <div class="cycle-image">♻️</div>
+
+            <h3>Community Impact</h3>
+
+            <p>
+                Promote recycling and reduce environmental harm.
+            </p>
+
+            <span>Click to explore →</span>
+
+        </div>
+
+
+        <!-- 5 -->
+        <div class="cycle-card"
+             onclick="openFeature('points')">
+
+            <div class="cycle-image">🏆</div>
+
+            <h3>Clean Points</h3>
+
+            <p>
+                Earn points, unlock badges and climb the leaderboard.
+            </p>
+
+            <span>Click to explore →</span>
+
+        </div>
+
+
+        <!-- 6 -->
+        <div class="cycle-card"
+             onclick="openFeature('security')">
+
+            <div class="cycle-image">🛡️</div>
+
+            <h3>Controlled access</h3>
+
+            <p>
+                Secure accounts ensure a safe and trusted platform.
+            </p>
+
+            <span>Click to explore →</span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- FEATURE POPUP -->
+
+<div class="feature-modal" id="featureModal">
+
+    <div class="feature-modal-box">
+
+        <button
+            class="feature-close"
+            onclick="closeFeature()">
+            ×
+        </button>
+
+        <div class="feature-modal-header">
+
+            <div class="feature-modal-icon" id="featureIcon">
+                📸
+            </div>
+
+            <div>
+
+                <h2 id="featureTitle">
+                    Evidence-based reporting
+                </h2>
+
+                <p id="featureSubtitle">
+                    See how this feature works
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="feature-steps" id="featureSteps"></div>
+
+
+        <button
+            class="feature-done"
+            onclick="closeFeature()">
+
+            ✓ Got it!
+
+        </button>
+
+    </div>
+
+</div>
+
+<section class="section">
+    <div class="section-head">
+        <h2>How Cleanova works</h2>
+        <p>A simple flow from seeing waste to measurable environmental impact.</p>
+    </div>
+    <div class="workflow">
+        <div class="step"><div class="step-number">1</div><h4>See</h4><p>Notice plastic waste.</p></div>
+        <div class="step"><div class="step-number">2</div><h4>Report</h4><p>Photo + GPS + details.</p></div>
+        <div class="step"><div class="step-number">3</div><h4>Cleanup</h4><p>Team handles the report.</p></div>
+        <div class="step"><div class="step-number">4</div><h4>Verify</h4><p>Evidence confirms the result.</p></div>
+        <div class="step"><div class="step-number">5</div><h4>Reward</h4><p>Points reflect real actions.</p></div>
+    </div>
+</section>
+
+<!-- COMMUNITY WASTE MAP -->
+
+<section class="section community-map-section" id="map">
+
+    <div class="section-head">
+
+        <div class="section-badge">
+            🗺️ LIVE COMMUNITY DATA
+        </div>
+
+        <h2>Community Waste Map</h2>
+
+        <p>
+            Discover reported plastic waste locations and track
+            cleanup progress across the community in real time.
+        </p>
+
+    </div>
+
+
+    <div class="community-map-card">
+
+        <!-- MAP HEADER -->
+
+        <div class="community-map-header">
+
+            <div class="community-map-title">
+
+                <div class="map-icon-box">
+                    📍
+                </div>
+
+                <div>
+
+                    <h3>Live Waste Monitoring</h3>
+
+                    <p>
+                        Reported locations appear here after they are submitted.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="map-location-btn"
+                onclick="locateUser()">
+
+                📍 Find My Location
+
+            </button>
+
+        </div>
+
+
+        <!-- MAP -->
+
+        <div class="community-map-wrapper">
+
+            <div id="communityWasteMap"></div>
+
+        </div>
+
+
+        <!-- MAP FOOTER -->
+
+        <div class="community-map-footer">
+
+            <div class="map-status">
+
+                <span class="status-dot red"></span>
+
+                <span>Pending / High</span>
+
+            </div>
+
+
+            <div class="map-status">
+
+                <span class="status-dot orange"></span>
+
+                <span>In Progress</span>
+
+            </div>
+
+
+            <div class="map-status">
+
+                <span class="status-dot green"></span>
+
+                <span>Verified / Cleaned</span>
+
+            </div>
+
+
+            <div class="map-tip">
+
+                💡 Click a marker for report details
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="section" id="dashboardSection">
+    <div class="dashboard">
+        <div class="dashboard-head">
+            <div>
+                <h2>Your Cleanova impact</h2>
+                <p>Personal activity is calculated from your submitted actions.</p>
+            </div>
+            <button class="btn btn-secondary btn-small" onclick="requireLogin('report')">+ New Report</button>
+        </div>
+        <div class="dashboard-grid">
+            <div class="dash-card"><small>Clean Points</small><h3 id="dashPoints">0</h3></div>
+            <div class="dash-card"><small>Reports</small><h3 id="dashReports">0</h3></div>
+            <div class="dash-card"><small>Cleanups</small><h3 id="dashCleanups">0</h3></div>
+            <div class="dash-card"><small>Reports Submitted</small><h3 id="dashPlastic">0 kg</h3></div>
+        </div>
+    </div>
+</section>
+
+<!-- MY REPORTS -->
+
+<section class="section" id="myReportsSection">
+
+    <div class="section-head">
+
+        <div>
+            <h2>📋 My Reports</h2>
+
+            <p>
+                Track the waste reports you have submitted and follow their progress.
+            </p>
+        </div>
+
+        <button
+            class="btn btn-primary btn-small"
+            onclick="requireLogin('report')">
+            + New Report
+        </button>
+
+    </div>
+
+    <div
+        class="reports"
+        id="myReportsList">
+
+        <div class="empty-state">
+            <p>Login to view your reports.</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- RECENT COMMUNITY REPORTS -->
+
+<section class="section">
+
+    <div class="section-head">
+
+        <h2>🌍 Recent Community Reports</h2>
+
+        <p>
+            Recent waste reports submitted by the Cleanova community.
+        </p>
+
+    </div>
+
+    <div
+        class="reports"
+        id="reportsList">
+    </div>
+
+</section>
+
+<section class="section" id="leaderboard">
+    <div class="section-head">
+        <h2>🏆 Community Champions</h2>
+        <p>Ranking is calculated from registered users and their Clean Points.</p>
+    </div>
+    <div class="leaderboard" id="leaderboardList"></div>
+</section>
+
+<footer>
+    <div class="footer-content">
+        <div>
+            <div class="logo"><div class="logo-icon">♻️</div>Clean<span>ova</span></div>
+            <p>Report. Clean. Recycle. Reward.</p>
+        </div>
+        <div>
+            <strong>Community-powered cleanliness</strong>
+            <p>Technology that turns reports into measurable action.</p>
+        </div>
+    </div>
+    <div class="copyright">© 2026 Cleanova • Community Service Project</div>
+</footer>
+
+<!-- LOGIN / REGISTER -->
+<div class="modal" id="loginModal">
+    <div class="modal-box">
+        <button class="close" onclick="closeLogin()">×</button>
+
+        <div id="loginForm">
+            <h2>👋 Welcome to Cleanova</h2>
+            <p class="modal-sub">Login to report waste, track activity and view the leaderboard.</p>
+            <div class="auth-error" id="loginError"></div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password">
+            </div>
+            <button class="btn btn-primary" style="width:100%" onclick="loginUser()">Login</button>
+
+            <div class="auth-switch">
+                Don't have an account?
+                <button onclick="showRegister()">Create account</button>
+            </div>
+        </div>
+
+        <div id="registerForm" style="display:none">
+            <h2>🌱 Create your account</h2>
+            <p class="modal-sub">Join the Cleanova community.</p>
+            <div class="auth-error" id="registerError"></div>
+
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="registerName" placeholder="Your full name">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="registerEmail" placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="registerPassword" placeholder="Minimum 6 characters">
+            </div>
+            <button class="btn btn-primary" style="width:100%" onclick="registerUser()">Create Account</button>
+
+            <div class="auth-switch">
+                Already have an account?
+                <button onclick="showLogin()">Login</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- REPORT -->
+<div class="modal" id="reportModal">
+    <div class="modal-box">
+        <button class="close" onclick="closeReport()">×</button>
+
+        <div id="reportFormContainer">
+            <h2>📍 Report Plastic Waste</h2>
+            <p class="modal-sub">Submit evidence so the cleanup team can act on it.</p>
+
+            <div class="form-group">
+                <label>Photo Evidence</label>
+                <input type="file" id="photo" accept="image/*" onchange="previewImage(event)">
+                <div class="file-note">JPG, PNG or other browser-supported image.</div>
+                <img id="preview" class="preview">
+            </div>
+
+            <div class="form-group">
+                <label>Location</label>
+                <div class="location-box">
+                    <div>
+                        <strong id="locationText">Location not detected</strong>
+                        <small id="coordinates">Use GPS to detect your current location.</small>
+                    </div>
+                    <button class="btn btn-primary btn-small" onclick="getLocation()">Detect</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Waste Type</label>
+                <select id="wasteType">
+                    <option value="">Select waste type</option>
+                    <option>Plastic Bottles</option>
+                    <option>Plastic Bags</option>
+                    <option>Food Wrappers</option>
+                    <option>Disposable Plastic</option>
+                    <option>Mixed Plastic</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Estimated Quantity</label>
+                <select id="quantity">
+                    <option value="">Select quantity</option>
+                    <option>Small</option>
+                    <option>Medium</option>
+                    <option>Large</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Severity</label>
+                <select id="severity">
+                    <option value="">Select severity</option>
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="description" placeholder="Describe where the waste is and what you observed..."></textarea>
+            </div>
+
+            <button class="btn btn-primary" style="width:100%" onclick="submitReport()">Submit Waste Report</button>
+        </div>
+
+        <div class="success-box" id="reportSuccess" style="display:none">
+            <div class="success-icon">✅</div>
+            <h2>Report Submitted</h2>
+            <p class="modal-sub">Your report has been recorded successfully.</p>
+            <div class="report-id" id="generatedReport">Report ID: CB0000</div>
+            <p style="font-size:12px;color:#64748b">Status: <strong style="color:#f59e0b">Pending</strong></p>
+            <button class="btn btn-primary" style="margin-top:18px" onclick="closeReport()">Done</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* =========================
+   LOCAL FRONTEND DATA LAYER
+   =========================
+   This version is fully functional in the browser.
+   Later, these functions can be replaced by your SQL-backed API.
+*/
+
+
+
+const API_URL = "http://localhost:5000/api";
+let authToken = localStorage.getItem("CleanovaToken");
+let loggedInUser = null;
+
+let communityMap = null;
+let heroMap = null;
+let reportLatitude = null;
+let reportLongitude = null;
+let userLocationMarker = null;
+
+function isLoggedIn(){
+    return !!authToken;
+}
+
+async function apiRequest(endpoint, options = {}){
+    const headers = options.headers || {};
+
+    // Don't set JSON content type when sending FormData
+    if(!(options.body instanceof FormData)){
+        headers["Content-Type"] = "application/json";
+    }
+
+    // Add login token if available
+    if(authToken){
+        headers["Authorization"] = "Bearer " + authToken;
+    }
+
+    const response = await fetch(API_URL + endpoint, {
+        ...options,
+        headers
+    });
+
+    const data = await response.json();
+
+    if(!response.ok){
+        throw new Error(data.message || "Something went wrong.");
+    }
+
+    return data;
+}
+
+function currentUser(){
+    return loggedInUser;
+}
+
+async function loadCurrentUser(){
+    if(!authToken){
+        loggedInUser = null;
+        updateUI();
+        return;
+    }
+
+    try{
+        const data = await apiRequest("/auth/me");
+
+        loggedInUser = data.user;
+
+        updateUI();
+
+    }catch(error){
+        console.error("Session expired:", error);
+
+        authToken = null;
+        loggedInUser = null;
+
+        localStorage.removeItem("CleanovaToken");
+
+        updateUI();
+    }
+}
+
+function escapeHTML(value){
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[char]));
+}
+
+function toast(title,message,type="success"){
+    const box = document.createElement("div");
+    box.className = "toast " + (type === "error" ? "error" : type === "warning" ? "warning" : "");
+    box.innerHTML = `<strong>${escapeHTML(title)}</strong><p>${escapeHTML(message)}</p>`;
+    document.getElementById("toastContainer").appendChild(box);
+    setTimeout(() => box.remove(), 3500);
+}
+
+function toggleMobileMenu(){
+  const menu = document.getElementById("mobileNavMenu");
+  if(menu){
+    menu.classList.toggle("active");
+  }
+}
+
+function closeMobileMenu(){
+  const menu = document.getElementById("mobileNavMenu");
+  if(menu){
+    menu.classList.remove("active");
+  }
+}
+
+function go(id){
+
+    const adminDashboard = document.getElementById("adminDashboard");
+
+    // Hide admin dashboard when visiting normal website sections
+    if(id !== "adminDashboard" && adminDashboard){
+        adminDashboard.style.display = "none";
+    }
+
+    // Open admin dashboard
+    if(id === "adminDashboard"){
+
+        const user = currentUser();
+
+        if(!user || user.role !== "ADMIN"){
+            toast(
+                "Access Denied",
+                "Admin access is required.",
+                "warning"
+            );
+            return;
+        }
+
+        if(adminDashboard){
+            adminDashboard.style.display = "block";
+        }
+
+        loadAdminReports();
+
+        setTimeout(() => {
+
+            adminDashboard.scrollIntoView({
+                behavior:"smooth",
+                block:"start"
+            });
+
+        }, 50);
+
+        return;
+    }
+
+    const el = document.getElementById(id);
+
+    if(el){
+        el.scrollIntoView({
+            behavior:"smooth",
+            block:"start"
+        });
+    }
+
+}
+
+/* =========================
+   AUTH
+   ========================= */
+
+function openLogin(){
+
+    const modal = document.getElementById("loginModal");
+
+    if(!modal){
+        console.error("Login modal not found.");
+        return;
+    }
+
+    // Close profile menu completely
+    const profileMenu = document.getElementById("profileMenu");
+
+    if(profileMenu){
+        profileMenu.classList.remove("active");
+        profileMenu.style.display = "none";
+    }
+
+    // Always open the login form
+    modal.classList.add("active");
+    modal.style.display = "flex";
+
+    showLogin();
+
+    // Clear old login error
+    hideAuthErrors();
+
+    // Put cursor directly in email field
+    setTimeout(() => {
+        const emailInput = document.getElementById("loginEmail");
+
+        if(emailInput){
+            emailInput.focus();
+        }
+    }, 50);
+}
+
+function closeLogin(){
+
+    const modal = document.getElementById("loginModal");
+
+    if(modal){
+        modal.classList.remove("active");
+        modal.style.display = "none";
+    }
+
+    hideAuthErrors();
+}
+
+function showRegister(){
+    document.getElementById("loginForm").style.display = "none";
+    document.getElementById("registerForm").style.display = "block";
+    hideAuthErrors();
+}
+
+function showLogin(){
+    document.getElementById("registerForm").style.display = "none";
+    document.getElementById("loginForm").style.display = "block";
+    hideAuthErrors();
+}
+
+function hideAuthErrors(){
+    document.getElementById("loginError").style.display = "none";
+    document.getElementById("registerError").style.display = "none";
+}
+
+function authError(id,message){
+    const el = document.getElementById(id);
+    el.textContent = message;
+    el.style.display = "block";
+}
+
+async function registerUser(){
+    const name = document.getElementById("registerName").value.trim();
+    const email = document.getElementById("registerEmail").value.trim();
+    const password = document.getElementById("registerPassword").value;
+
+    hideAuthErrors();
+
+    if(!name || !email || !password){
+        authError("registerError", "Please fill in all fields.");
+        return;
+    }
+
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+        authError("registerError", "Please enter a valid email address.");
+        return;
+    }
+
+    if(password.length < 6){
+        authError("registerError", "Password must be at least 6 characters.");
+        return;
+    }
+
+    try{
+        const data = await apiRequest("/auth/register", {
+            method: "POST",
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                password: password
+            })
+        });
+
+        // Save login information returned by backend
+        authToken = data.token;
+        loggedInUser = data.user;
+
+        localStorage.setItem("CleanovaToken", authToken);
+
+        updateUI();
+        closeLogin();
+
+        toast(
+            "Registration Successful",
+            "Welcome to Cleanova!",
+            "success"
+        );
+
+    }catch(error){
+        authError(
+            "registerError",
+            error.message || "Registration failed."
+        );
+    }
+}
+
+async function loginUser(){
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    hideAuthErrors();
+
+    if(!email || !password){
+        authError("loginError", "Please enter your email and password.");
+        return;
+    }
+
+    try{
+        const data = await apiRequest("/auth/login", {
+            method: "POST",
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        });
+
+        // Save JWT token
+        authToken = data.token;
+        loggedInUser = data.user;
+
+        localStorage.setItem("CleanovaToken", authToken);
+
+        updateUI();
+        closeLogin();
+
+        toast(
+            "Login Successful",
+            "Welcome back, " + (loggedInUser.name || "User") + "!",
+            "success"
+        );
+
+    }catch(error){
+        authError(
+            "loginError",
+            error.message || "Invalid email or password."
+        );
+    }
+}
+
+function logout(){
+
+    authToken = null;
+    loggedInUser = null;
+
+    localStorage.removeItem("CleanovaToken");
+
+    const profileMenu = document.getElementById("profileMenu");
+
+    if(profileMenu){
+        profileMenu.classList.remove("active");
+        profileMenu.style.display = "";
+    }
+
+    const loginModal = document.getElementById("loginModal");
+
+    if(loginModal){
+        loginModal.classList.remove("active");
+        loginModal.style.display = "";
+    }
+
+    const emailInput = document.getElementById("loginEmail");
+    const passwordInput = document.getElementById("loginPassword");
+
+    if(emailInput) emailInput.value = "";
+    if(passwordInput) passwordInput.value = "";
+
+    updateUI();
+
+    toast(
+        "Logged Out",
+        "You have been logged out successfully.",
+        "success"
+    );
+}
+function updateUI(){
+    const user = currentUser();
+
+const profileButton = document.getElementById("profileButton");
+const loginNavButton = document.getElementById("loginNavButton");
+const profileMenu = document.getElementById("profileMenu");
+const adminNavButton = document.getElementById("adminNavButton");
+    const menuAvatar = document.getElementById("menuAvatar");
+    const menuName = document.getElementById("menuName");
+    const menuEmail = document.getElementById("menuEmail");
+const menuRole = document.getElementById("menuRole");
+const menuPoints = document.getElementById("menuPoints");
+    const menuReports = document.getElementById("menuReports");
+
+    const dashPoints = document.getElementById("dashPoints");
+    const dashReports = document.getElementById("dashReports");
+    const dashCleanups = document.getElementById("dashCleanups");
+    const dashPlastic = document.getElementById("dashPlastic");
+
+    if(user){
+    // Show profile button
+    if(profileButton) profileButton.style.display = "flex";
+    if(profileButton){
+    profileButton.textContent =
+        (user.name || "U").trim().charAt(0).toUpperCase();
+}
+    if(profileButton) profileButton.style.display = "flex";
+    if(loginNavButton) loginNavButton.style.display = "none";
+
+    if(adminNavButton){
+    if(user.role === "ADMIN"){
+        adminNavButton.style.display = "inline-flex";
+    }else{
+        adminNavButton.style.display = "none";
+    }
+}
+const adminDashboard = document.getElementById("adminDashboard");
+
+if(adminDashboard){
+    if(user.role === "ADMIN"){
+        adminDashboard.style.display = "none";
+    }else{
+        adminDashboard.style.display = "none";
+    }
+}
+    // Reset profile menu state after login
+    if(profileMenu){
+        profileMenu.classList.remove("active");
+        profileMenu.style.display = "";
+    }
+        // Profile information
+        if(menuAvatar){
+            menuAvatar.textContent =
+                (user.name || "U").charAt(0).toUpperCase();
+        }
+
+        if(menuName){
+            menuName.textContent = user.name || "User";
+        }
+
+        if(menuEmail){
+            menuEmail.textContent = user.email || "";
+        }
+
+        if(menuRole){
+    if(user.role === "ADMIN"){
+        menuRole.style.display = "inline-block";
+        menuRole.textContent = "🛡️ ADMIN";
+    }else{
+        menuRole.style.display = "none";
+    }
+}
+
+        if(menuPoints){
+            menuPoints.textContent = user.points ?? 0;
+        }
+
+        if(menuReports){
+            menuReports.textContent = user.reports_count ?? 0;
+        }
+
+        // Dashboard information
+        if(dashPoints){
+            dashPoints.textContent = user.points ?? 0;
+        }
+
+        if(dashReports){
+            dashReports.textContent = user.reports_count ?? 0;
+        }
+
+        if(dashCleanups){
+            dashCleanups.textContent = user.cleanups_count ?? 0;
+        }
+
+        if(dashPlastic){
+            dashPlastic.textContent = user.plastic_collected ?? 0;
+        }
+
+    }else{
+        // User is logged out
+        if(profileButton) profileButton.style.display = "none";
+        if(loginNavButton) loginNavButton.style.display = "flex";
+        if(adminNavButton) adminNavButton.style.display = "none";
+        if(profileMenu) profileMenu.style.display = "none";
+
+        if(menuAvatar) menuAvatar.textContent = "U";
+        if(menuName) menuName.textContent = "Guest";
+        if(menuEmail) menuEmail.textContent = "";
+        if(menuRole) menuRole.style.display = "none";
+
+        if(menuPoints) menuPoints.textContent = "0";
+        if(menuReports) menuReports.textContent = "0";
+
+        if(dashPoints) dashPoints.textContent = "—";
+        if(dashReports) dashReports.textContent = "—";
+        if(dashCleanups) dashCleanups.textContent = "—";
+        if(dashPlastic) dashPlastic.textContent = "—";
+    }
+
+    // Refresh website data
+    loadLeaderboard();
+loadReports();
+loadMyReports();
+updateStatistics();
+}
+
+function toggleProfileMenu(){
+    const menu = document.getElementById("profileMenu");
+
+    if(!menu){
+        return;
+    }
+
+    menu.classList.toggle("active");
+}
+
+function requireLogin(destination){
+    if(!isLoggedIn()){
+        toast("Login required","Please login or create an account to continue.","warning");
+        openLogin();
+        return;
+    }
+
+    if(destination === "report") openReport();
+    if(destination === "leaderboard") go("leaderboard");
+}
+
+/* =========================
+   REPORTING
+   ========================= */
+
+function openReport(){
+    if(!isLoggedIn()){
+        toast("Login required","Create an account before submitting a waste report.","warning");
+        openLogin();
+        return;
+    }
+
+    resetReportModal();
+    document.getElementById("reportModal").classList.add("active");
+}
+
+function closeReport(){
+    document.getElementById("reportModal").classList.remove("active");
+}
+
+function resetReportModal(){
+    document.getElementById("reportFormContainer").style.display = "block";
+    document.getElementById("reportSuccess").style.display = "none";
+    document.getElementById("photo").value = "";
+    document.getElementById("preview").style.display = "none";
+    document.getElementById("wasteType").value = "";
+    document.getElementById("quantity").value = "";
+    document.getElementById("severity").value = "";
+    document.getElementById("description").value = "";
+    reportLatitude = null;
+    reportLongitude = null;
+    document.getElementById("locationText").textContent = "Location not detected";
+    document.getElementById("coordinates").textContent = "Use GPS to detect your current location.";
+}
+
+function previewImage(event){
+    const file = event.target.files[0];
+    const preview = document.getElementById("preview");
+    if(!file){
+        preview.style.display = "none";
+        return;
+    }
+    if(!file.type.startsWith("image/")){
+        toast("Invalid file","Please select an image.","error");
+        event.target.value = "";
+        return;
+    }
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+}
+
+function getLocation(){
+    if(!navigator.geolocation){
+        toast(
+            "GPS unavailable",
+            "Your browser does not support location detection.",
+            "error"
+        );
+        return;
+    }
+
+    document.getElementById("locationText").textContent =
+        "Detecting location...";
+
+    document.getElementById("coordinates").textContent =
+        "Getting your current location...";
+
+    navigator.geolocation.getCurrentPosition(
+        position => {
+
+            reportLatitude = position.coords.latitude;
+            reportLongitude = position.coords.longitude;
+
+            document.getElementById("locationText").textContent = "📍 Location confirmed";
+
+            document.getElementById("coordinates").textContent =
+                `Latitude: ${reportLatitude.toFixed(5)} | Longitude: ${reportLongitude.toFixed(5)}`;
+
+            // Move report map to detected location
+            if(typeof reportMap !== "undefined" && reportMap){
+                reportMap.setView(
+                    [reportLatitude, reportLongitude],
+                    17
+                );
+
+                // Remove previous temporary marker
+                if(typeof reportLocationMarker !== "undefined" && reportLocationMarker){
+                    reportMap.removeLayer(reportLocationMarker);
+                }
+
+                // Add marker for selected report location
+                reportLocationMarker = L.marker([
+                    reportLatitude,
+                    reportLongitude
+                ]).addTo(reportMap);
+
+                reportLocationMarker.bindPopup(
+                    "<b>📍 Report Location</b><br>Your waste report will be submitted here."
+                ).openPopup();
+            }
+
+            toast(
+                "Location detected",
+                "Your report will include this location."
+            );
+        },
+
+        error => {
+
+            console.error("Location error:", error);
+
+            document.getElementById("locationText").textContent =
+                "Location unavailable";
+
+            document.getElementById("coordinates").textContent =
+                "Allow location access and try again.";
+
+            if(error.code === 1){
+                toast(
+                    "Location permission denied",
+                    "Please allow location access in your browser settings.",
+                    "warning"
+                );
+            }else if(error.code === 2){
+                toast(
+                    "Location unavailable",
+                    "Your device could not determine your current location.",
+                    "warning"
+                );
+            }else if(error.code === 3){
+                toast(
+                    "Location timeout",
+                    "GPS took too long. Please try again.",
+                    "warning"
+                );
+            }else{
+                toast(
+                    "Location error",
+                    "Unable to detect your location. Please try again.",
+                    "error"
+                );
+            }
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        }
+    );
+}
+
+function nextReportNumber(){
+    const reports = getReports();
+    let max = 1000;
+    reports.forEach(r => {
+        const n = parseInt(String(r.id).replace(/\D/g,""),10);
+        if(!isNaN(n)) max = Math.max(max,n);
+    });
+    return max + 1;
+}
+
+async function submitReport(){
+    if(!isLoggedIn()){
+        openLogin();
+        toast(
+            "Login Required",
+            "Please login before submitting a report.",
+            "error"
+        );
+        return;
+    }
+
+    const photoInput = document.getElementById("photo");
+    const wasteType = document.getElementById("wasteType").value;
+    const quantity = document.getElementById("quantity").value;
+    const severity = document.getElementById("severity").value;
+    const description = document.getElementById("description").value.trim();
+    if(reportLatitude === null || reportLongitude === null){
+    toast(
+        "Location Required",
+        "Please detect your current location before submitting the report.",
+        "warning"
+    );
+    return;
+}
+    if(!wasteType || !quantity || !severity || !description){
+        toast(
+            "Missing Information",
+            "Please fill in all required fields.",
+            "error"
+        );
+        return;
+    }
+
+    if(reportLatitude === null || reportLongitude === null){
+        toast(
+            "Location Required",
+            "Please get your current location before submitting.",
+            "error"
+        );
+        return;
+    }
+
+    try{
+        const formData = new FormData();
+
+        formData.append("wasteType", wasteType);
+        formData.append("quantity", quantity);
+        formData.append("severity", severity);
+        formData.append("description", description);
+        formData.append("latitude", reportLatitude);
+        formData.append("longitude", reportLongitude);
+
+        // Add photo only if the user selected one
+        if(photoInput && photoInput.files.length > 0){
+            formData.append("photo", photoInput.files[0]);
+        }
+
+        const data = await apiRequest("/reports", {
+            method: "POST",
+            body: formData
+        });
+
+        // Show success screen
+        const generatedReport = document.getElementById("generatedReport");
+        const reportSuccess = document.getElementById("reportSuccess");
+
+        if(generatedReport){
+            generatedReport.textContent = data.reportCode || "Submitted";
+        }
+
+        if(reportSuccess){
+            reportSuccess.style.display = "block";
+        }
+
+        // Reset report form
+        const reportForm = document.getElementById("reportForm");
+
+        if(reportForm){
+            reportForm.reset();
+        }
+
+        reportLatitude = null;
+        reportLongitude = null;
+
+        // Refresh all backend data
+        await loadCurrentUser();
+        await loadReports();
+        await loadMyReports();
+        await loadLeaderboard();
+        await updateStatistics();
+
+        refreshMapMarkers();
+
+        toast(
+            "Report Submitted",
+            "Your waste report has been submitted successfully.",
+            "success"
+        );
+
+    }catch(error){
+        console.error("Report submission error:", error);
+
+        toast(
+            "Submission Failed",
+            error.message || "Unable to submit the report.",
+            "error"
+        );
+    }
+}
+
+/* =========================
+   ADMIN REPORT MANAGEMENT
+   ========================= */
+
+async function loadAdminReports(){
+
+    const user = currentUser();
+
+    if(!user || user.role !== "ADMIN"){
+        toast(
+            "Access Denied",
+            "Admin access is required.",
+            "warning"
+        );
+        return;
+    }
+
+    const container = document.getElementById("adminReportsContainer");
+
+    if(!container){
+        console.error("adminReportsContainer not found.");
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="
+            text-align:center;
+            padding:50px;
+            color:#94a3b8;
+        ">
+            <div style="font-size:30px;margin-bottom:10px;">⏳</div>
+            Loading community reports...
+        </div>
+    `;
+
+    try{
+
+        const data = await apiRequest("/admin/reports");
+
+        const reports = data.reports || [];
+
+        /* Update admin statistics */
+
+        const total = reports.length;
+
+        const pending = reports.filter(
+            r => r.status === "Pending"
+        ).length;
+
+        const progress = reports.filter(
+            r => r.status === "In Progress"
+        ).length;
+
+        const verified = reports.filter(
+            r => r.status === "Verified"
+        ).length;
+
+        const totalReports =
+            document.getElementById("adminTotalReports");
+
+        const pendingReports =
+            document.getElementById("adminPendingReports");
+
+        const progressReports =
+            document.getElementById("adminProgressReports");
+
+        const verifiedReports =
+            document.getElementById("adminVerifiedReports");
+
+        if(totalReports)
+            totalReports.textContent = total;
+
+        if(pendingReports)
+            pendingReports.textContent = pending;
+
+        if(progressReports)
+            progressReports.textContent = progress;
+
+        if(verifiedReports)
+            verifiedReports.textContent = verified;
+
+
+        /* No reports */
+
+        if(reports.length === 0){
+
+            container.innerHTML = `
+                <div style="
+                    text-align:center;
+                    padding:60px 20px;
+                    color:#94a3b8;
+                ">
+                    <div style="font-size:45px;margin-bottom:15px;">
+                        📭
+                    </div>
+
+                    <h3 style="
+                        color:#e2e8f0;
+                        margin-bottom:8px;
+                    ">
+                        No reports yet
+                    </h3>
+
+                    <p>
+                        Community waste reports will appear here.
+                    </p>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        /* Create report cards */
+
+        container.innerHTML = reports.map(report => {
+
+            const statusClass =
+                report.status === "In Progress"
+                    ? "in-progress"
+                    : report.status.toLowerCase();
+
+            const photoHTML = report.photo_url
+                ? `
+                    <div class="admin-photo">
+                        <small>PHOTO EVIDENCE</small>
+                        <br>
+                        <img
+                            src="${escapeHTML(
+                                API_URL.replace("/api","") +
+                                report.photo_url
+                            )}"
+                            alt="Waste evidence"
+                            onclick="window.open(this.src,'_blank')"
+                        >
+                    </div>
+                `
+                : `
+                    <div class="admin-no-photo">
+                        📷 No photo uploaded
+                    </div>
+                `;
+
+
+            return `
+                <div class="admin-report-card">
+
+                    <div class="admin-report-header">
+
+                        <div>
+
+                            <div class="admin-report-code">
+                                ${escapeHTML(report.report_code)}
+                            </div>
+
+                            <div class="admin-report-user">
+                                👤 ${escapeHTML(report.reporter_name || "Unknown")}
+                                <span>•</span>
+                                ✉️ ${escapeHTML(report.reporter_email || "")}
+                            </div>
+
+                        </div>
+
+                        <div class="admin-status ${statusClass}">
+                            ${escapeHTML(report.status)}
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-report-grid">
+
+                        <div>
+                            <small>WASTE TYPE</small>
+                            <strong>
+                                ${escapeHTML(report.waste_type)}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <small>QUANTITY</small>
+                            <strong>
+                                ${escapeHTML(report.quantity)}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <small>SEVERITY</small>
+                            <strong>
+                                ${escapeHTML(report.severity)}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <small>LOCATION</small>
+                            <strong>
+                                ${Number(report.latitude).toFixed(5)},
+                                ${Number(report.longitude).toFixed(5)}
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-description">
+
+                        <small>DESCRIPTION</small>
+
+                        <p>
+                            ${escapeHTML(report.description)}
+                        </p>
+
+                    </div>
+
+
+                    ${photoHTML}
+
+
+                    <div class="admin-report-footer">
+
+                        <div class="admin-date">
+                            🕒
+                            ${new Date(report.created_at).toLocaleString()}
+                        </div>
+
+
+                        <div class="admin-actions">
+
+                            <select
+                                class="admin-status-select"
+                                id="status-${report.id}"
+                            >
+
+                                <option value="Pending"
+                                    ${report.status === "Pending" ? "selected" : ""}>
+                                    Pending
+                                </option>
+
+                                <option value="In Progress"
+                                    ${report.status === "In Progress" ? "selected" : ""}>
+                                    In Progress
+                                </option>
+
+                                <option value="Verified"
+                                    ${report.status === "Verified" ? "selected" : ""}>
+                                    Verified
+                                </option>
+
+                                <option value="Rejected"
+                                    ${report.status === "Rejected" ? "selected" : ""}>
+                                    Rejected
+                                </option>
+
+                            </select>
+
+
+                            <button
+                                class="btn btn-primary btn-small"
+                                onclick="updateAdminReportStatus(${report.id})"
+                            >
+                                💾 Update
+                            </button>
+
+                            <button
+    class="btn btn-small"
+    style="margin-left:8px;"
+    onclick="createCleanup(${report.id})"
+>
+    🧹 Create Cleanup
+</button>
+
+                        </div>
+
+                    </div>
+
+
+                    ${
+                        report.admin_note
+                        ? `
+                            <div class="admin-note">
+
+                                <strong>
+                                    📝 ADMIN NOTE
+                                </strong>
+
+                                <p>
+                                    ${escapeHTML(report.admin_note)}
+                                </p>
+
+                            </div>
+                        `
+                        : ""
+                    }
+
+                </div>
+            `;
+
+        }).join("");
+
+
+    }catch(error){
+
+        console.error("Admin reports error:", error);
+
+        container.innerHTML = `
+            <div style="
+                text-align:center;
+                padding:50px;
+                color:#fca5a5;
+            ">
+
+                <div style="font-size:35px;margin-bottom:12px;">
+                    ⚠️
+                </div>
+
+                <h3 style="color:#fff;">
+                    Failed to load reports
+                </h3>
+
+                <p style="margin-top:8px;">
+                    ${escapeHTML(
+                        error.message ||
+                        "Unable to connect to the server."
+                    )}
+                </p>
+
+                <button
+                    class="btn btn-primary btn-small"
+                    style="margin-top:18px;"
+                    onclick="loadAdminReports()"
+                >
+                    🔄 Try Again
+                </button>
+
+            </div>
+        `;
+    }
+}
+
+async function loadAdminCleanups(){
+    if(!isLoggedIn()){
+        return;
+    }
+
+    const user = currentUser();
+
+    if(!user || user.role !== "ADMIN"){
+        toast(
+            "Access Denied",
+            "Admin access is required.",
+            "warning"
+        );
+        return;
+    }
+
+    const container = document.getElementById("adminCleanupsContainer");
+
+    if(!container){
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="text-align:center;padding:40px;color:#64748b;">
+            Loading cleanup tasks...
+        </div>
+    `;
+
+    try{
+        const data = await apiRequest("/admin/cleanups");
+
+        const cleanups = data.cleanups || [];
+
+        if(cleanups.length === 0){
+            container.innerHTML = `
+                <div style="
+                    text-align:center;
+                    padding:50px 20px;
+                    color:#64748b;
+                ">
+                    <div style="font-size:42px;margin-bottom:10px;">🧹</div>
+                    <h3 style="margin:0 0 8px;color:#334155;">
+                        No Cleanup Tasks Yet
+                    </h3>
+                    <p style="margin:0;">
+                        Create a cleanup task from a community report to see it here.
+                    </p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = cleanups.map(cleanup => `
+            <div class="admin-report-card">
+
+                <div class="admin-report-header">
+                    <div>
+                        <h3>
+                            🧹 Cleanup #${cleanup.id}
+                        </h3>
+
+                        <p class="admin-note">
+                            Report #${cleanup.report_id}
+                        </p>
+                    </div>
+
+                    <span class="admin-status">
+                        ${escapeHTML(cleanup.status || "Assigned")}
+                    </span>
+                </div>
+
+                <div class="admin-report-grid">
+
+                    <div>
+                        <strong>📋 Report ID</strong>
+                        <span>${cleanup.report_id}</span>
+                    </div>
+
+                    <div>
+                        <strong>👤 Assigned To</strong>
+                        <span>
+                            ${
+                                cleanup.assigned_name
+                                ? escapeHTML(cleanup.assigned_name)
+                                : "Not assigned"
+                            }
+                        </span>
+                    </div>
+
+                    <div>
+                        <strong>📅 Created</strong>
+                        <span>
+                            ${
+                                cleanup.created_at
+                                ? new Date(cleanup.created_at).toLocaleString()
+                                : "—"
+                            }
+                        </span>
+                    </div>
+
+                    <div>
+    <strong>🔄 Status</strong>
+
+    <select
+        id="cleanup-status-${cleanup.id}"
+        class="admin-status-select"
+        style="margin-top:8px;"
+    >
+        <option value="Assigned"
+            ${cleanup.status === "Assigned" ? "selected" : ""}>
+            Assigned
+        </option>
+
+        <option value="In Progress"
+            ${cleanup.status === "In Progress" ? "selected" : ""}>
+            In Progress
+        </option>
+
+        <option value="Completed"
+            ${cleanup.status === "Completed" ? "selected" : ""}>
+            Completed
+        </option>
+
+        <option value="Verified"
+            ${cleanup.status === "Verified" ? "selected" : ""}>
+            Verified
+        </option>
+</select>
+
+<button
+  class="btn btn-primary btn-small"
+  style="margin-top:10px;"
+  onclick="updateAdminCleanupStatus(${cleanup.id})"
+>
+  💾 Update Cleanup
+</button>
+
+</div>
+</div>
+
+                ${
+                    cleanup.admin_note
+                    ? `
+                        <div class="admin-description">
+                            <strong>📝 Admin Note</strong>
+                            <p>${escapeHTML(cleanup.admin_note)}</p>
+                        </div>
+                    `
+                    : ""
+                }
+
+            </div>
+        `).join("");
+
+    }catch(error){
+        console.error("Load cleanups error:", error);
+
+        container.innerHTML = `
+            <div style="
+                text-align:center;
+                padding:40px;
+                color:#dc2626;
+            ">
+                Failed to load cleanup tasks.
+            </div>
+        `;
+
+        toast(
+            "Cleanup Loading Failed",
+            error.message || "Could not load cleanup tasks.",
+            "error"
+        );
+    }
+}
+
+async function updateAdminCleanupStatus(cleanupId){
+
+    const user = currentUser();
+
+    if(!user || user.role !== "ADMIN"){
+        toast(
+            "Access Denied",
+            "Admin access is required.",
+            "warning"
+        );
+        return;
+    }
+
+    const select = document.getElementById(
+        "cleanup-status-" + cleanupId
+    );
+
+    if(!select){
+        toast(
+            "Error",
+            "Cleanup status selector not found.",
+            "error"
+        );
+        return;
+    }
+
+    const status = select.value;
+
+    const confirmed = confirm(
+        "Change cleanup status to " + status + "?"
+    );
+
+    if(!confirmed){
+        return;
+    }
+
+    try{
+
+        await apiRequest(
+            "/admin/cleanups/" + cleanupId + "/status",
+            {
+                method: "PATCH",
+                body: JSON.stringify({
+                    status: status
+                })
+            }
+        );
+
+        toast(
+            "Cleanup Updated",
+            "Cleanup status changed to " + status + ".",
+            "success"
+        );
+
+        await loadAdminCleanups();
+        await loadAdminReports();
+        await loadReports();
+        await updateStatistics();
+
+        if(typeof refreshMapMarkers === "function"){
+            await refreshMapMarkers();
+        }
+
+    }catch(error){
+
+        console.error(
+            "Cleanup status update error:",
+            error
+        );
+
+        toast(
+            "Update Failed",
+            error.message ||
+            "Could not update cleanup status.",
+            "error"
+        );
+    }
+}
+async function updateAdminReportStatus(reportId){
+
+    const user = currentUser();
+
+    if(!user || user.role !== "ADMIN"){
+        toast(
+            "Access Denied",
+            "Admin access is required.",
+            "warning"
+        );
+        return;
+    }
+
+    const select =
+        document.getElementById("status-" + reportId);
+
+    if(!select){
+        toast(
+            "Error",
+            "Status selector not found.",
+            "error"
+        );
+        return;
+    }
+
+    const status = select.value;
+
+    const adminNote = prompt(
+        "Add an optional admin note:",
+        ""
+    );
+
+    if(adminNote === null){
+        return;
+    }
+
+    try{
+
+        await apiRequest(
+            "/admin/reports/" + reportId + "/status",
+            {
+                method: "PATCH",
+
+                body: JSON.stringify({
+                    status: status,
+                    adminNote: adminNote.trim()
+                })
+            }
+        );
+
+        toast(
+            "Report Updated",
+            "Report status changed to " + status + ".",
+            "success"
+        );
+
+        /* Reload admin reports */
+
+        await loadAdminReports();
+
+        /* Refresh public reports */
+
+        await loadReports();
+
+        /* Refresh map */
+
+        if(typeof refreshMapMarkers === "function"){
+            await refreshMapMarkers();
+        }
+
+        /* Refresh statistics */
+
+        if(typeof updateStatistics === "function"){
+            await updateStatistics();
+        }
+
+    }catch(error){
+
+        console.error(
+            "Admin status update error:",
+            error
+        );
+
+        toast(
+            "Update Failed",
+            error.message || "Could not update report.",
+            "error"
+        );
+    }
+}
+
+
+async function createCleanup(reportId){
+
+    if(!isLoggedIn()){
+        toast(
+            "Login Required",
+            "Please login first.",
+            "error"
+        );
+        return;
+    }
+
+    const user = currentUser();
+
+    if(!user || user.role !== "ADMIN"){
+        toast(
+            "Access Denied",
+            "Admin access is required.",
+            "warning"
+        );
+        return;
+    }
+
+    const confirmed = confirm(
+        "Create a cleanup task for this report?"
+    );
+
+    if(!confirmed){
+        return;
+    }
+
+    try{
+
+        await apiRequest("/admin/cleanups", {
+            method: "POST",
+            body: JSON.stringify({
+                reportId: reportId
+            })
+        });
+
+        toast(
+            "Cleanup Created",
+            "The cleanup task has been created successfully.",
+            "success"
+        );
+
+        await loadAdminReports();
+
+        if(typeof loadReports === "function"){
+            await loadReports();
+        }
+
+        if(typeof updateStatistics === "function"){
+            await updateStatistics();
+        }
+
+    }catch(error){
+
+        console.error(
+            "Create cleanup error:",
+            error
+        );
+
+        toast(
+            "Cleanup Failed",
+            error.message || "Could not create cleanup.",
+            "error"
+        );
+
+    }
+
+}
+
+/* =========================
+   MY REPORTS
+   ========================= */
+
+async function loadMyReports(){
+
+    const container =
+        document.getElementById("myReportsList");
+
+    if(!container){
+        return;
+    }
+
+    const user = currentUser();
+
+    // User is not logged in
+    if(!user){
+
+        container.innerHTML = `
+            <div class="empty-state">
+
+                <div style="font-size:40px;margin-bottom:12px;">
+                    🔐
+                </div>
+
+                <h3>Login to view your reports</h3>
+
+                <p style="margin-top:8px;">
+                    Your submitted waste reports will appear here.
+                </p>
+
+                <button
+                    class="btn btn-primary btn-small"
+                    style="margin-top:18px;"
+                    onclick="openLogin()">
+
+                    Login
+
+                </button>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="
+            text-align:center;
+            padding:40px;
+            color:#94a3b8;
+        ">
+            ⏳ Loading your reports...
+        </div>
+    `;
+
+    try{
+
+        const data =
+            await apiRequest("/my-reports");
+
+        const reports =
+            data.reports || [];
+
+        if(reports.length === 0){
+
+            container.innerHTML = `
+                <div class="empty-state">
+
+                    <div style="
+                        font-size:45px;
+                        margin-bottom:15px;
+                    ">
+                        📭
+                    </div>
+
+                    <h3>
+                        You haven't submitted any reports yet
+                    </h3>
+
+                    <p style="margin-top:8px;">
+                        Report plastic waste and help make your
+                        community cleaner.
+                    </p>
+
+                    <button
+                        class="btn btn-primary btn-small"
+                        style="margin-top:18px;"
+                        onclick="requireLogin('report')">
+
+                        📍 Report Plastic Waste
+
+                    </button>
+
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = reports.map(report => {
+
+            const statusClass =
+                String(report.status || "")
+                    .toLowerCase()
+                    .replace(/\s+/g, "-");
+
+            return `
+
+                <div class="report-card">
+
+                    <div class="report-card-header">
+
+                        <strong>
+                            ${escapeHTML(report.report_code || "")}
+                        </strong>
+
+                        <span
+                            class="status ${statusClass}">
+                            ${escapeHTML(
+                                report.status || "Pending"
+                            )}
+                        </span>
+
+                    </div>
+
+
+                    <div class="report-card-body">
+
+                        <p>
+                            <strong>Waste Type:</strong>
+                            ${escapeHTML(
+                                report.waste_type || ""
+                            )}
+                        </p>
+
+                        <p>
+                            <strong>Quantity:</strong>
+                            ${escapeHTML(
+                                report.quantity || ""
+                            )}
+                        </p>
+
+                        <p>
+                            <strong>Severity:</strong>
+                            ${escapeHTML(
+                                report.severity || ""
+                            )}
+                        </p>
+
+                        <p>
+                            <strong>Description:</strong>
+                            ${escapeHTML(
+                                report.description || ""
+                            )}
+                        </p>
+
+                        <p>
+                            <strong>Date:</strong>
+                            ${escapeHTML(
+                                report.created_at || ""
+                            )}
+                        </p>
+
+                        ${
+                            report.admin_note
+                            ? `
+                                <div style="
+                                    margin-top:18px;
+                                    padding:14px 16px;
+                                    border-radius:12px;
+                                    background:rgba(45,212,191,.08);
+                                    border-left:3px solid #2dd4bf;
+                                ">
+
+                                    <strong style="
+                                        color:#5eead4;
+                                        font-size:12px;
+                                    ">
+                                        📝 ADMIN NOTE
+                                    </strong>
+
+                                    <p style="
+                                        margin:7px 0 0;
+                                        color:#cbd5e1;
+                                        line-height:1.6;
+                                    ">
+                                        ${escapeHTML(
+                                            report.admin_note
+                                        )}
+                                    </p>
+
+                                </div>
+                            `
+                            : ""
+                        }
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }).join("");
+
+    }catch(error){
+
+        console.error(
+            "Failed to load my reports:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="empty-state">
+
+                <div style="font-size:35px;">
+                    ⚠️
+                </div>
+
+                <h3>
+                    Unable to load your reports
+                </h3>
+
+                <p style="margin-top:8px;">
+                    ${escapeHTML(
+                        error.message ||
+                        "Please try again."
+                    )}
+                </p>
+
+                <button
+                    class="btn btn-primary btn-small"
+                    style="margin-top:18px;"
+                    onclick="loadMyReports()">
+
+                    🔄 Try Again
+
+                </button>
+
+            </div>
+        `;
+
+    }
+
+}
+
+/* =========================
+   REPORT LIST
+   ========================= */
+
+async function loadReports(){
+    try{
+        const data = await apiRequest("/reports");
+
+        const reports = data.reports || [];
+
+        // Find the reports container in your page
+        const container = document.getElementById("reportsList");
+
+
+
+
+        if(!container){
+            return;
+        }
+
+        if(reports.length === 0){
+            container.innerHTML = `
+                <div class="empty-state">
+                    <p>No reports submitted yet.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = reports.map(report => `
+            <div class="report-card">
+                <div class="report-card-header">
+                    <strong>${escapeHTML(report.report_code || report.reportCode || "")}</strong>
+                    <span class="status ${String(report.status || "").toLowerCase().replace(/\s+/g, "-")}">
+                        ${escapeHTML(report.status || "Pending")}
+                    </span>
+                </div>
+
+                <div class="report-card-body">
+                    <p>
+                        <strong>Waste Type:</strong>
+                        ${escapeHTML(report.waste_type || report.wasteType || "")}
+                    </p>
+
+                    <p>
+                        <strong>Quantity:</strong>
+                        ${escapeHTML(report.quantity || "")}
+                    </p>
+
+                    <p>
+                        <strong>Severity:</strong>
+                        ${escapeHTML(report.severity || "")}
+                    </p>
+
+                    <p>
+                        <strong>Description:</strong>
+                        ${escapeHTML(report.description || "")}
+                    </p>
+
+                    <p>
+                        <strong>Reported by:</strong>
+                        ${escapeHTML(report.reporter_name || report.reporterName || "User")}
+                    </p>
+
+                    <p>
+                        <strong>Date:</strong>
+                        ${escapeHTML(report.created_at || report.date || "")}
+                    </p>
+                </div>
+            </div>
+        `).join("");
+
+    }catch(error){
+        console.error("Failed to load reports:", error);
+    }
+}
+
+
+
+
+/* ============================================================
+   ADMIN - UPDATE REPORT STATUS
+============================================================ */
+
+async function updateAdminReportStatus(reportId){
+
+    const select =
+        document.getElementById(
+            "status-" + reportId
+        );
+
+    if(!select){
+        return;
+    }
+
+    const status =
+        select.value;
+
+
+    const adminNote =
+        prompt(
+            "Add an optional admin note:"
+        );
+
+
+    try{
+
+        await apiRequest(
+            "/admin/reports/" +
+            reportId +
+            "/status",
+            {
+                method:"PATCH",
+
+                body:JSON.stringify({
+                    status:status,
+                    adminNote:
+                        adminNote || ""
+                })
+            }
+        );
+
+
+        toast(
+            "Report Updated",
+            "Report status changed to " + status + ".",
+            "success"
+        );
+
+
+        /* Refresh everything */
+
+        await loadAdminReports();
+
+        await loadReports();
+
+        await updateStatistics();
+
+        await refreshMapMarkers();
+
+
+    }catch(error){
+
+        console.error(
+            "Admin status update error:",
+            error
+        );
+
+        toast(
+            "Update Failed",
+            error.message ||
+            "Unable to update report.",
+            "error"
+        );
+
+    }
+
+}
+
+
+async function updateStatistics(){
+    try{
+        // Get all reports from the backend
+        const data = await apiRequest("/reports");
+
+        const reports = data.reports || [];
+
+        // Total reports
+        const totalReports = reports.length;
+
+        // Verified reports
+        const verifiedReports = reports.filter(
+            report => report.status === "Verified"
+        ).length;
+
+        // At this stage, plastic collection is not returned
+        // by the public reports API.
+        const totalPlastic = 0;
+
+        // Update statistics on the page
+        const totalReportsElement =
+            document.getElementById("totalReports");
+
+        const cleanupsElement =
+            document.getElementById("totalCleanups");
+
+        const plasticElement =
+            document.getElementById("totalPlastic");
+
+        const usersElement =
+            document.getElementById("totalUsers");
+
+        if(totalReportsElement){
+            totalReportsElement.textContent = totalReports;
+        }
+
+        if(cleanupsElement){
+            try{
+    const cleanupData = await apiRequest("/cleanups/count");
+
+    cleanupsElement.textContent =
+        cleanupData.completedCleanups || 0;
+
+}catch(error){
+
+    cleanupsElement.textContent = "—";
+
+}
+        }
+
+        if(plasticElement){
+            plasticElement.textContent = verifiedReports;
+        }
+
+        // User count is not currently returned by /api/reports
+        if(usersElement){
+    try{
+        const userData = await apiRequest("/users/count");
+        usersElement.textContent = userData.totalUsers || 0;
+    }catch(error){
+        usersElement.textContent = "—";
+    }
+}
+
+    }catch(error){
+        console.error("Failed to update statistics:", error);
+    }
+}
+
+/* =========================
+   LEADERBOARD
+   ========================= */
+
+async function loadLeaderboard(){
+    const container = document.getElementById("leaderboardList");
+
+    if(!container){
+        return;
+    }
+
+    // Leaderboard requires login
+    if(!isLoggedIn()){
+        container.innerHTML = `
+            <div class="empty-state">
+                <p>Please login to view the leaderboard.</p>
+            </div>
+        `;
+        return;
+    }
+
+    try{
+        const data = await apiRequest("/leaderboard");
+
+        const users = data.leaderboard || [];
+
+        if(users.length === 0){
+            container.innerHTML = `
+                <div class="empty-state">
+                    <p>No leaderboard data available yet.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = users.map((user, index) => `
+            <div class="leaderboard-row">
+                <div class="leaderboard-rank">
+                    ${index + 1}
+                </div>
+
+                <div class="leaderboard-user">
+                    <div class="leaderboard-avatar">
+                        ${escapeHTML((user.name || "U").charAt(0).toUpperCase())}
+                    </div>
+
+                    <div>
+                        <strong>${escapeHTML(user.name || "User")}</strong>
+                        <small>
+                            ${user.reports_count ?? 0} reports
+                        </small>
+                    </div>
+                </div>
+
+                <div class="leaderboard-points">
+                    ${user.points ?? 0} pts
+                </div>
+            </div>
+        `).join("");
+
+    }catch(error){
+        console.error("Failed to load leaderboard:", error);
+
+        container.innerHTML = `
+            <div class="empty-state">
+                <p>Unable to load leaderboard.</p>
+            </div>
+        `;
+    }
+}
+
+/* =========================
+   MAPS
+   ========================= */
+
+function markerColor(status){
+    if(status === "Verified") return "#16a34a";
+    if(status === "In Progress") return "#f59e0b";
+    return "#ef4444";
+}
+
+function addWasteMarker(
+    map,
+    reportOrLatitude,
+    longitude,
+    id,
+    type,
+    severity,
+    status
+){
+
+    let report;
+
+    /* Supports both:
+       addWasteMarker(map, report)
+       AND
+       addWasteMarker(map, lat, lng, id, type, severity, status)
+    */
+
+    if(
+        typeof reportOrLatitude === "object" &&
+        reportOrLatitude !== null
+    ){
+
+        report = reportOrLatitude;
+
+    }else{
+
+        report = {
+            latitude: reportOrLatitude,
+            longitude: longitude,
+            id: id,
+            type: type,
+            severity: severity,
+            status: status,
+            quantity: "—"
+        };
+
+    }
+
+
+    /* Don't create invalid markers */
+
+    if(
+        report.latitude == null ||
+        report.longitude == null ||
+        isNaN(Number(report.latitude)) ||
+        isNaN(Number(report.longitude))
+    ){
+        return;
+    }
+
+
+    const color =
+        markerColor(report.status);
+
+
+    const icon = L.divIcon({
+
+        className:"",
+
+        html:`
+            <div style="
+                width:18px;
+                height:18px;
+                background:${color};
+                border:3px solid white;
+                border-radius:50%;
+                box-shadow:0 3px 12px rgba(0,0,0,.3);
+            "></div>
+        `,
+
+        iconSize:[18,18],
+
+        iconAnchor:[9,9]
+
+    });
+
+
+    const marker =
+        L.marker(
+            [
+                Number(report.latitude),
+                Number(report.longitude)
+            ],
+            {icon}
+        ).addTo(map);
+
+
+    marker.bindPopup(`
+
+        <div style="
+            min-width:200px;
+            font-family:Inter,Arial,sans-serif;
+        ">
+
+            <strong style="font-size:15px">
+                ${escapeHTML(String(report.id || "Waste Report"))}
+            </strong>
+
+            <div style="
+                font-size:12px;
+                line-height:1.7;
+                margin-top:7px;
+                color:#475569;
+            ">
+
+                🗑️ <b>Waste:</b>
+                ${escapeHTML(String(report.type || "Unknown"))}
+                <br>
+
+                ⚠️ <b>Severity:</b>
+                ${escapeHTML(String(report.severity || "Unknown"))}
+                <br>
+
+                📊 <b>Quantity:</b>
+                ${escapeHTML(String(report.quantity || "—"))}
+                <br>
+
+                🔄 <b>Status:</b>
+                ${escapeHTML(String(report.status || "Pending"))}
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+async function refreshMapMarkers(){
+    try{
+        const data = await apiRequest("/reports");
+        const reports = data.reports || [];
+
+        // Remove existing dynamic markers
+        if(window.wasteMarkers){
+            window.wasteMarkers.forEach(marker => {
+                if(communityMap){
+                    communityMap.removeLayer(marker);
+                }
+
+                if(heroMap){
+                    heroMap.removeLayer(marker);
+                }
+            });
+        }
+
+        window.wasteMarkers = [];
+
+        // Add reports from MySQL to the maps
+        reports.forEach(report => {
+            const latitude = Number(report.latitude);
+            const longitude = Number(report.longitude);
+
+            if(!Number.isFinite(latitude) || !Number.isFinite(longitude)){
+                return;
+            }
+
+            if(communityMap){
+    addWasteMarker(
+        communityMap,
+        report
+    );
+}
+
+if(heroMap){
+    addWasteMarker(
+        heroMap,
+        report
+    );
+}
+        });
+
+    }catch(error){
+        console.error("Failed to load map reports:", error);
+    }
+}
+
+function createMaps(){
+
+    /* ==============================
+       COMMUNITY WASTE MAP
+    ============================== */
+
+    const communityContainer =
+        document.getElementById("communityWasteMap");
+
+    if(communityContainer && !communityMap){
+
+        communityMap = L.map("communityWasteMap",{
+            dragging:true,
+            touchZoom:true,
+            scrollWheelZoom:true,
+            doubleClickZoom:true,
+            boxZoom:true,
+            keyboard:true
+        }).setView([16.5449,81.5212],13);
+
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom:19,
+                attribution:
+                    "&copy; OpenStreetMap contributors"
+            }
+        ).addTo(communityMap);
+
+        L.control.zoom({
+            position:"topright"
+        }).addTo(communityMap);
+
+
+        setTimeout(function(){
+            communityMap.invalidateSize();
+        },500);
+    }
+
+
+    /* ==============================
+       SMALL LIVE WASTE MAP
+    ============================== */
+
+    const heroContainer =
+        document.getElementById("realWasteMap");
+
+    if(heroContainer && !heroMap){
+
+        heroMap = L.map("realWasteMap",{
+            dragging:true,
+            touchZoom:true,
+            scrollWheelZoom:true,
+            doubleClickZoom:true,
+            boxZoom:true,
+            keyboard:true
+        }).setView([16.5449,81.5212],13);
+
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom:19,
+                attribution:
+                    "&copy; OpenStreetMap contributors"
+            }
+        ).addTo(heroMap);
+
+        L.control.zoom({
+            position:"topright"
+        }).addTo(heroMap);
+
+
+
+        setTimeout(function(){
+            heroMap.invalidateSize();
+        },500);
+    }
+    refreshMapMarkers();
+
+}
+
+
+
+function locateUser(){
+    if(!navigator.geolocation){
+        toast("GPS unavailable","Your browser does not support geolocation.","error");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+
+            communityMap.setView([lat,lon],16);
+
+            if(userLocationMarker) communityMap.removeLayer(userLocationMarker);
+
+            userLocationMarker = L.marker([lat,lon]).addTo(communityMap)
+                .bindPopup("<strong>📍 You are here</strong>")
+                .openPopup();
+        },
+        () => toast("Location unavailable","Allow location access and try again.","warning"),
+        {enableHighAccuracy:true,timeout:10000,maximumAge:0}
+    );
+}
+
+/* =========================
+   MODAL CLICK OUTSIDE
+   ========================= */
+
+document.getElementById("loginModal").addEventListener("click",e => {
+    if(e.target === e.currentTarget) closeLogin();
+});
+
+document.getElementById("reportModal").addEventListener("click",e => {
+    if(e.target === e.currentTarget) closeReport();
+});
+
+document.addEventListener("click",e => {
+    const menu = document.getElementById("profileMenu");
+    const profile = document.getElementById("profileButton");
+    if(menu.classList.contains("active") && !menu.contains(e.target) && e.target !== profile){
+        menu.classList.remove("active");
+    }
+});
+
+/* =========================
+   START
+   ========================= */
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadCurrentUser();
+    createMaps();
+});
+
+/* =========================================
+   Cleanova FEATURE EXPLAINER
+========================================= */
+
+const featureData = {
+
+    report: {
+
+        icon: "📸",
+
+        title: "Evidence-based reporting",
+
+        subtitle: "See how evidence-based reporting works",
+
+        steps: [
+
+            ["📷","Take Photo",
+             "Capture a clear photo of the waste."],
+
+            ["📍","Capture Location",
+             "GPS detects the exact location automatically."],
+
+            ["📝","Add Details",
+             "Select waste type, severity and description."],
+
+            ["🚀","Submit Report",
+             "Submit your report with all information."],
+
+            ["🆔","Report Created",
+             "A unique report ID is generated."]
+        ]
+    },
+
+
+    location: {
+
+        icon: "📍",
+
+        title: "Location tracking",
+
+        subtitle: "Know exactly where the waste was reported",
+
+        steps: [
+
+            ["📍","Detect GPS",
+             "Use your device location."],
+
+            ["🗺️","Map Location",
+             "The location is stored with the report."],
+
+            ["📌","Pin Report",
+             "The waste appears on the community map."],
+
+            ["👷","Admin Reviews It",
+             "Cleanup teams can locate the waste."],
+
+            ["✅","Verify",
+             "The location helps confirm the cleanup."]
+        ]
+    },
+
+
+    cleanup: {
+
+        icon: "🗑️",
+
+        title: "Report Tracking",
+
+        subtitle: "From report to verified cleanup",
+
+        steps: [
+
+            ["1️⃣","Report",
+             "Citizen submits waste evidence."],
+
+            ["🔎","Review",
+             "The report is checked."],
+
+            ["👷","Cleanup",
+             "Cleanup team takes action."],
+
+            ["📸","Evidence",
+             "Before and after evidence is recorded."],
+
+            ["✅","Verified",
+             "Cleanup is marked completed."]
+        ]
+    },
+
+
+    recycling: {
+
+        icon: "♻️",
+
+        title: "Community Impact",
+
+        subtitle: "Turn collected plastic into measurable impact",
+
+        steps: [
+
+            ["🗑️","Collect",
+             "Plastic waste is collected."],
+
+            ["⚖️","Measure",
+             "Collected material can be recorded."],
+
+            ["♻️","Sort",
+             "Reusable plastic is separated."],
+
+            ["🏭","Recycle",
+             "Material is sent for recycling."],
+
+            ["🌱","Impact",
+             "Environmental impact is tracked."]
+        ]
+    },
+
+
+    points: {
+
+        icon: "🏆",
+
+        title: "Clean Points",
+
+        subtitle: "Every verified action can contribute to your score",
+
+        steps: [
+
+            ["👤","Register",
+             "Create your Cleanova account."],
+
+            ["📋","Report",
+             "Submit a valid waste report."],
+
+            ["🧹","Cleanup",
+             "Participate in cleanup activities."],
+
+            ["✅","Verify",
+             "Verified actions earn points."],
+
+            ["🏆","Leaderboard",
+             "Your ranking updates automatically."]
+        ]
+    },
+
+
+    security: {
+
+        icon: "🛡️",
+
+        title: "Controlled access",
+
+        subtitle: "Keep community actions connected to real accounts",
+
+        steps: [
+
+            ["👤","Create Account",
+             "Register with your name and email."],
+
+            ["🔐","Login",
+             "Access protected community features."],
+
+            ["📋","Submit",
+             "Reports are connected to the logged-in user."],
+
+            ["📊","Track",
+             "Users can view their own activity."],
+
+            ["🛡️","Protect",
+             "Admin controls can manage verification."]
+        ]
+    }
+
+};
+
+
+function openFeature(type){
+
+    const feature = featureData[type];
+
+    if(!feature) return;
+
+    document.getElementById("featureIcon").innerText =
+        feature.icon;
+
+    document.getElementById("featureTitle").innerText =
+        feature.title;
+
+    document.getElementById("featureSubtitle").innerText =
+        feature.subtitle;
+
+
+    const container =
+        document.getElementById("featureSteps");
+
+
+    container.innerHTML =
+        feature.steps.map((step,index) => `
+
+            <div class="feature-step">
+
+                <div class="feature-step-number">
+                    ${index + 1}
+                </div>
+
+                <div class="feature-step-icon">
+                    ${step[0]}
+                </div>
+
+                <h4>
+                    ${step[1]}
+                </h4>
+
+                <p>
+                    ${step[2]}
+                </p>
+
+            </div>
+
+        `).join("");
+
+
+    document
+        .getElementById("featureModal")
+        .classList
+        .add("active");
+
+}
+
+
+function closeFeature(){
+
+    document
+        .getElementById("featureModal")
+        .classList
+        .remove("active");
+
+}
+
+
+/* Close when clicking outside */
+
+document
+    .getElementById("featureModal")
+    .addEventListener("click",function(e){
+
+        if(e.target === this){
+
+            closeFeature();
+
+        }
+
+    });
+
+
+/* Close with ESC */
+
+document.addEventListener("keydown",function(e){
+
+    if(e.key === "Escape"){
+
+        closeFeature();
+
+    }
+
+});
+
+
+</script>
+
+</body>
+</html>
