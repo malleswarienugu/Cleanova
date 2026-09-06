@@ -164,12 +164,7 @@ async function testDatabase() {
 // ============================================================
 
 app.get("/", (req, res) => {
-
-    res.json({
-        success: true,
-        message: "Cleanova backend is running."
-    });
-
+    res.sendFile(path.join(__dirname, "website.html"));
 });
 
 
