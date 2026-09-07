@@ -3965,7 +3965,14 @@ p{
                 <textarea id="description" placeholder="Describe where the waste is and what you observed..."></textarea>
             </div>
 
-            <button class="btn btn-primary" style="width:100%" onclick="submitReport()">Submit Waste Report</button>
+            <button
+    id="submitReportBtn"
+    class="btn btn-primary"
+    style="width:100%"
+    onclick="submitReport()"
+>
+    Submit Waste Report
+</button>
         </div>
 
         <div class="success-box" id="reportSuccess" style="display:none">
@@ -4659,6 +4666,16 @@ function nextReportNumber(){
 }
 
 async function submitReport(){
+        const submitBtn = document.getElementById("submitReportBtn");
+
+    if(submitBtn && submitBtn.disabled){
+        return;
+    }
+
+    if(submitBtn){
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Submitting...";
+    }
     if(!isLoggedIn()){
         openLogin();
         toast(
@@ -4765,6 +4782,10 @@ async function submitReport(){
             error.message || "Unable to submit the report.",
             "error"
         );
+                if(submitBtn){
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Waste Report";
+        }
     }
 }
 
